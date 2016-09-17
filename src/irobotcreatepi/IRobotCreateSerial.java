@@ -1,4 +1,4 @@
-package iRobotCreatePI;
+package irobotcreatepi;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -17,7 +17,7 @@ public class IRobotCreateSerial extends IRobotCreate {
 	
 	public IRobotCreateSerial(String port) throws NoSuchPortException, PortInUseException, UnsupportedCommOperationException, IOException {
 		
-		CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier("COM3");
+		CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(port);
 		serialPort = (SerialPort) portIdentifier.open("CreatePi",2000);					
 		serialPort.setSerialPortParams(57600,SerialPort.DATABITS_8,SerialPort.STOPBITS_1,SerialPort.PARITY_NONE);
 		

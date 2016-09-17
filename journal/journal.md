@@ -9,3 +9,7 @@ Blue wire is data TO the robot. Green wire is data FROM the robot.
 I wrote serial port code in java to talk to the robot through the FTDI prop plug.
 
 I'll use a USB plug from the pi too. That will free up the onboard pi serial port for communication when there is no network (like at Columbia High).
+
+Now running the java code from the pi. Easy to do. WinSCP copies the compile class files to the pi. I can compile in Eclipse.
+
+Power may be an issue. I wish I could power the pi separately so I could kill power to the create without rebooting the pi. Probably not a big deal ... just keep it powered up. I'll keep the wallwart plug in case.
