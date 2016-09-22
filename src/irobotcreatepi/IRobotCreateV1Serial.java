@@ -10,13 +10,13 @@ import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.UnsupportedCommOperationException;
 
-public class IRobotCreateSerial extends IRobotCreate {
+public class IRobotCreateV1Serial extends IRobotCreateV1 {
 	
 	private SerialPort serialPort;
 	private OutputStream os;
 	private InputStream is;
 	
-	public IRobotCreateSerial(String port) throws NoSuchPortException, PortInUseException, UnsupportedCommOperationException, IOException {
+	public IRobotCreateV1Serial(String port) throws NoSuchPortException, PortInUseException, UnsupportedCommOperationException, IOException {
 		
 		CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(port);
 		serialPort = (SerialPort) portIdentifier.open("CreatePi",2000);					

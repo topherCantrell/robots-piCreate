@@ -2,9 +2,9 @@ package irobotcreatepi;
 
 import java.util.Arrays;
 
-import irobotcreatepi.IRobotCreate.SENSOR_PACKET;
+import irobotcreatepi.IRobotCreateV1.SENSOR_PACKET;
 
-public class Tinker {
+public class TinkerV1 {
 
 	public static void main(String[] args) throws Exception {
 		
@@ -12,12 +12,12 @@ public class Tinker {
 		String devname = "COM4"; // PC
 		
 		System.out.println("USING PORT '"+devname+"'");
-		IRobotCreate robot = new IRobotCreateSerial(devname);
+		IRobotCreateV1 robot = new IRobotCreateV1Serial(devname);
 		
-		robot.setMode(IRobotCreate.MODE.PASSIVE); // Required at startup
+		robot.setMode(IRobotCreateV1.MODE.PASSIVE); // Required at startup
 		Thread.sleep(1000); // Wait for mode change	
 		
-		robot.setMode(IRobotCreate.MODE.FULL);
+		robot.setMode(IRobotCreateV1.MODE.FULL);
 		Thread.sleep(1000);
 		
 		//robot.driveSpin(100,true);

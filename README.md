@@ -19,3 +19,6 @@ Newer hardware, including the iRobot Create2 use this protocol:
 This is the landing page for Create:
 
 [http://www.irobot.com/About-iRobot/STEM/Create-2.aspx](http://www.irobot.com/About-iRobot/STEM/Create-2.aspx)
+
+Here is a project page for Create and the Raspberry Pi:
+[http://www.irobot.com/~/media/MainSite/PDFs/About/STEM/Create/RaspberryPi_Tutorial.pdf](http://www.irobot.com/~/media/MainSite/PDFs/About/STEM/Create/RaspberryPi_Tutorial.pdf)

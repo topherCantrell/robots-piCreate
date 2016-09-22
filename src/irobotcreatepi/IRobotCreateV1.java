@@ -1,11 +1,18 @@
 package irobotcreatepi;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-public abstract class IRobotCreate {
+public abstract class IRobotCreateV1 {
+	
+	public abstract void sendByte(int value);	
+	public abstract int readByte();	
+	
+	private Map<SENSOR_PACKET,Integer[]> cachedSensorPackets = new HashMap<SENSOR_PACKET,Integer[]>();
 	
 	/**
-	 * The default comm is 57600, no parity, 1 stop, no flow.
+	 * For V1 the default comm is 57600, no parity, 1 stop, no flow.
 	 * 
 	 * You MUST send the passive mode command at startup. Set the mode to PASSIVE.
 	 * Then wait one second for the mode to change. THEN you can talk to the controller.
@@ -106,12 +113,6 @@ public abstract class IRobotCreate {
 		DIGITAL_INPUT_3,
 		PASSIVE_MODE
 	}
-	
-	int currentSensorStreamSize = 0;
-	
-	public abstract void sendByte(int value);	
-	
-	public abstract int readByte();	
 			
 	/**
 	 * This command sets the baud rate in bits per second (bps)
@@ -576,5 +577,120 @@ public abstract class IRobotCreate {
 		sendByte(158);
 		sendByte(e);
 	}	
+	
+	// When you read a sensor packet the result is cached and can be decoded
+	// with these getters.
+	
+	// TODO javadoc these
+	
+	public int getBumpsAndDrops() {
+		Integer[] cache = cachedSensorPackets.get(SENSOR_PACKET.P07_BUMPS_AND_WHEEL_DROPS);
+		return cache[0];
+	}	
+	public boolean isWheeldropCaster() {
+		return (getBumpsAndDrops()&16)>0;
+	}	
+	public boolean isWheeldropLeft() {
+		return (getBumpsAndDrops()&8)>0;
+	}
+	public boolean isWheeldropRight() {
+		return (getBumpsAndDrops()&4)>0;
+	}
+	public boolean isBumpLeft() {
+		return (getBumpsAndDrops()&2)>0;
+	}
+	public boolean isBumpRight() {
+		return (getBumpsAndDrops()&1)>0;
+	}	
+	public boolean isWall() {
+		Integer[] cache = cachedSensorPackets.get(SENSOR_PACKET.P08_WALL);
+		return cache[0]>0;
+	}
+	public boolean isCliffLeft() {
+		Integer[] cache = cachedSensorPackets.get(SENSOR_PACKET.P09_CLIFF_LEFT);
+		return cache[0]>0;
+	}
+	public boolean isCliffFrontLeft() {
+		Integer[] cache = cachedSensorPackets.get(SENSOR_PACKET.P10_CLIFF_FRONT_LEFT);
+		return cache[0]>0;
+	}
+	public boolean isCliffFrontRight() {
+		Integer[] cache = cachedSensorPackets.get(SENSOR_PACKET.P11_CLIFF_FRONT_RIGHT);
+		return cache[0]>0;
+	}
+	public boolean isCliffRight() {
+		Integer[] cache = cachedSensorPackets.get(SENSOR_PACKET.P12_CLIFF_RIGHT);
+		return cache[0]>0;
+	}
+	public boolean isVirtualWall() {
+		Integer[] cache = cachedSensorPackets.get(SENSOR_PACKET.P13_VIRTUAL_WALL);
+		return cache[0]>0;
+	}	
+	public int getOvercurrents() {
+		Integer[] cache = cachedSensorPackets.get(SENSOR_PACKET.P14_LOW_SIDE_DRIVER_AND_WHEEL_OVERCURRENTS);
+		return cache[0];
+	}
+	public boolean isLeftWheelOvercurrent() {
+		return (getOvercurrents()&16)>0;
+	}
+	public boolean isRightWheelOvercurrent() {
+		return (getOvercurrents()&8)>0;		
+	}
+	public boolean isLD2Overcurrent() {
+		return (getOvercurrents()&4)>0;
+	}
+	public boolean isLD1Overcurrent() {
+		return (getOvercurrents()&1)>0;
+	}
+	public boolean isLD0Overcurrent() {
+		return (getOvercurrents()&2)>0;
+	}	
+	public int getInfraredByte() {
+		Integer[] cache = cachedSensorPackets.get(SENSOR_PACKET.P17_INFRARED_BYTE);
+		return cache[0];
+	}
+	public int getButtons() {
+		Integer[] cache = cachedSensorPackets.get(SENSOR_PACKET.P18_BUTTONS);
+		return cache[0];
+	}
+	public boolean isButtonAdv() {
+		return (getButtons()&4)>0;
+	}
+	public boolean isButtonPlay() {
+		return (getButtons()&1)>0;
+	}	
+	
+	// TODO
+	public int getDistanceTraveled() {return 0;}
+	public int getAngleTurned() {return 0;}	
+	public int getChargingState() {return 0;}
+	public int getVoltage() {return 0;}
+	public int getCurrent() {return 0;}
+	public int getBatteryTemperature() {return 0;}
+	public int getBatteryCharge() {return 0;}
+	public int getBatteryCapacity() {return 0;}	
+	public int getWallSignal() {return 0;}
+	public int getCliffLeftSignal() {return 0;}
+	public int getCliffFrontLeftSignal() {return 0;}
+	public int getCliffFrontRightSignal() {return 0;}
+	public int getCliffRightSignal() {return 0;}
+	public int getCagoBayDigitalInputs() {return 0;}	
+	public boolean isCargoBayIn0() {return false;}
+	public boolean isCargoBayIn1() {return false;}
+	public boolean isCargoBayIn2() {return false;}
+	public boolean isCargoBayIn3() {return false;}
+	public boolean isCargoBayBaudChange() {return false;}	
+	public int getCargoBayAnalogSignal() {return 0;}
+	public int getChargingSourcesAvaialable() {return 0;}	
+	public boolean isHomeBaseChargerAvailable() {return false;}
+	public boolean isInternalChargerAvailable() {return false;}	
+	public MODE getOIMode() {return null;}
+	public int getPlayingSongNumber() {return 0;}
+	public boolean isSongPlaying() {return false;}
+	public int getNumberStreamPackets() {return 0;}
+	public int getRequestedVelocity() {return 0;}
+	public int getRequestedRadius() {return 0;}
+	public int getRequestedRightVelocity() {return 0;}
+	public int getRequestedLeftVeloicty() {return 0;}	
 
 }
