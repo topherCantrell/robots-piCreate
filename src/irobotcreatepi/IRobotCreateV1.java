@@ -18,6 +18,7 @@ public class IRobotCreateV1 {
 	private OutputStream os;
 	
 	private Map<SENSOR_PACKET,Integer[]> cachedSensorPackets = new HashMap<SENSOR_PACKET,Integer[]>();
+	// TODO populate this
 	
 	private void sendByte(int value) {
 		try {
@@ -63,8 +64,7 @@ public class IRobotCreateV1 {
 		P03_GROUP3(10), //  10 bytes 21-26
 		P04_GROUP4(14), //  14 bytes 27-34
 		P05_GROUP5(12), //  12 bytes 35-42
-		P06_GROUP6(52), //  52 bytes  7-42
-		
+		P06_GROUP6(52), //  52 bytes  7-42		
 		P07_BUMPS_AND_WHEEL_DROPS(1),  //4:Wheeldrop Caster, 3:Wheeldrop left, 2:Wheeldrop right, 1:Bump left, 0:Bump Right
 		P08_WALL(1), // 0:Wall seen
 		P09_CLIFF_LEFT(1), // 0:Cliff seen
@@ -72,16 +72,13 @@ public class IRobotCreateV1 {
 		P11_CLIFF_FRONT_RIGHT(1),// 0:Cliff seen	
 		P12_CLIFF_RIGHT(1), // 0:Cliff seen
 		P13_VIRTUAL_WALL(1), // 0:Virtual wall seen
-		P14_LOW_SIDE_DRIVER_AND_WHEEL_OVERCURRENTS(1), // 4:Left wheel, 3: Right wheel, 2:LD-2, 1:LD-0, 0:LD-1
-		
+		P14_LOW_SIDE_DRIVER_AND_WHEEL_OVERCURRENTS(1), // 4:Left wheel, 3: Right wheel, 2:LD-2, 1:LD-0, 0:LD-1		
 		P15_UNUSED(1),
-		P16_UNUSED(1),
-		
+		P16_UNUSED(1),		
 		// Remote: 129=Left, 130=Forward, 131=Right, 132=Spot, 133=Max, 134=Small, 135=Medium, 136=Large/Clean, 137=PAUSE, 138=Power, 139=arc-forward-left, 140=arc-forward-right, 141=drive-stop
 		// Scheduling Remote: 142=Send All, 143=Seek Dock
 		// Home Base: 240=Reserved, 248=Red Buoy, 244=Green Buoy, 242=Force Field, 252=Red Buoy and Green Buoy, 250=Red Buoy and Force Field, 246=Green Buoy and Force Field, 254=Red Buoy, Green Buoy, and Force Field
-		P17_INFRARED_BYTE(1), // 255=none,
-		
+		P17_INFRARED_BYTE(1), // 255=none,		
 		P18_BUTTONS(1), // 2:Advance, 0:Play		
 		P19_DISTANCE(2), // Distance traveled in mm since last request. 2 byte signed (big endian)		
 		P20_ANGLE(2), // Angle turned since last request. 2 byte signed (big endian)
@@ -552,19 +549,106 @@ public class IRobotCreateV1 {
 		return ret;
 	}
 	
-	public void streamSensorPackets(SENSOR_PACKET ... packetIDs) {	
-		// TODO
+	/**
+	 * This command starts a continuous stream of data packets.
+	 * The list of packets requested is sent every 15 ms, which is
+	 * the rate iRobot Create uses to update data.
+	 * This is the best method of requesting sensor data if you
+	 * are controlling Create over a wireless network (which has
+	 * poor real-time characteristics) with software running on a
+	 * desktop computer. 
+	 * @param packetIDs list of requested packets
+	 */
+	public void startStreamSensorPackets(SENSOR_PACKET ... packetIDs) {	
+		sendByte(148);
+		sendByte(packetIDs.length);
+		for(SENSOR_PACKET id : packetIDs) {
+			sendByte(id.ordinal());
+		}
 	}
 	
-	public void pauseSensorStream() {
+	/**
+	 *  Stops the stream without clearing the list
+	 *  of requested packets.
+	 */
+	public void pauseStreamSensorPackets() {
 		sendByte(150);
 		sendByte(0);
 	}
-	public void resumeSensorStream() {
+	
+	/**
+	 *  Starts the stream
+	 *  using the list of packets last requested.
+	 */
+	public void resumeStreamSensorPackets() {
 		sendByte(150);
 		sendByte(1);
 	}
 	
+	/**
+	 * Read the packet stream. The format of the data returned is:
+	 * <br>
+	 * [19][N-bytes][Packet ID 1][Packet 1 data…]
+	 * [Packet ID 2][Packet 2 data…][Checksum]
+	 * <br>
+	 * N-bytes is the number of bytes between the n-bytes byte and
+	 * the checksum.
+	 * <br>
+	 * The checksum is a 1-byte value. It is the 8-bit complement
+	 * of all of the bytes between the header and the checksum.
+	 * That is, if you add all of the bytes after the checksum, and
+	 * the checksum, the low byte of the result will be 0.
+	 * @param packetIDs list of requested packets
+	 * @return raw sensor bytes (in order) WITHOUT header or checksum or null if format error
+	 */
+	public int[] readStreamSensorPackets(SENSOR_PACKET ... packetIDs) {
+		
+		// Total return data size (just data ... no protocol bytes)
+		int totalSize = 0;
+		for(SENSOR_PACKET id : packetIDs) {			
+			totalSize += id.getNumBytes();
+		}
+		int [] ret = new int[totalSize];
+		
+		// Header byte must be 19
+		int prot = readByte();
+		if(prot!=19) return null;
+		
+		int chk = readByte(); // Total number of bytes ... first contribution to checksum
+		
+		// Make sure we agree with the robot on what is being sent
+		if(chk!=totalSize+packetIDs.length) return null;
+		
+		// Fill up the return data
+		int pos=0;		
+		for(SENSOR_PACKET id : packetIDs) {
+			prot = readByte();
+			chk += prot;
+			chk = chk & 0xFF;
+			if(prot!=id.ordinal()) return null;
+			for(int x=0;x<id.getNumBytes();++x) {
+				prot = readByte();
+				ret[pos++] = prot;
+				chk = chk & 0xFF;
+			}
+		}
+		
+		// Now add in the checksum value at the end of the stream
+		chk = chk + readByte();
+		
+		if(chk!=0) return null;		
+		
+		return ret;
+	}	
+	
+	/**
+	 * This command specifies a script to be played later. A script
+	 * consists of OI commands and can be up to 100 bytes long.
+	 * There is no flow control, but “wait” commands (see below)
+	 * cause Create to hold its current state until the specified
+	 * event is detected.
+	 * @param script raw script of bytes
+	 */
 	public void storeScript(int ... script) {
 		sendByte(152);
 		sendByte(script.length);
@@ -573,21 +657,58 @@ public class IRobotCreateV1 {
 		}
 	}
 	
+	/**
+	 * This command loads a previously defined OI script into the
+     * serial input queue for playback.
+	 */
 	public void runScript() {
 		sendByte(153);
 	}
 	
+	/**
+	 * This command returns the values of a previously stored
+	 * script, starting with the number of bytes in the script and
+	 * followed by the script’s commands and data bytes. It first
+	 * halts the sensor stream, if one has been started with a
+	 * Stream or Pause/Resume Stream command. To restart the
+	 * stream, send Pause/Resume Stream (opcode 150).
+	 * @return the stored script
+	 */
 	public int[] readStoreScript() {
 		sendByte(154);
-		// TODO read script
-		return null;
+		int len = readByte();
+		int[] ret = new int[len];
+		for(int i=0;i<len;++i) {
+			ret[i] = readByte();
+		}
+		return ret;
 	}
 	
+	/**
+	 * This command causes Create to wait for the specified time.
+	 * During this time, Create’s state does not change, nor does
+	 * it react to any inputs, serial or otherwise.
+	 * @param time wait time in tenths of second with a resolution of 15 ms
+	 */
 	public void scriptWaitTime(int time) {
 		sendByte(155);
 		sendByte(time);
 	}
 	
+	/**
+	 * This command causes iRobot Create to wait until it has
+	 * traveled the specified distance in mm. When Create travels
+	 * forward, the distance is incremented. When Create travels
+	 * backward, the distance is decremented. If the wheels
+	 * are passively rotated in either direction, the distance is
+	 * incremented. Until Create travels the specified distance,
+	 * its state does not change, nor does it react to any inputs,
+	 * serial or otherwise.
+	 * <br>
+	 * NOTE: This command resets the distance variable that is
+	 * returned in Sensors packets 19, 2 and 6.
+	 * @param distance signed distance in mm
+	 */
 	public void scriptWaitDistance(int distance) {
 		int[] d = twoByteSigned(distance);
 		sendByte(156);
@@ -595,6 +716,18 @@ public class IRobotCreateV1 {
 		sendByte(d[1]);
 	}
 	
+	/**
+	 * This command causes Create to wait until it has rotated
+	 * through specified angle in degrees. When Create turns
+	 * counterclockwise, the angle is incremented. When Create
+	 * turns clockwise, the angle is decremented. Until Create
+	 * turns through the specified angle, its state does not change,
+	 * nor does it react to any inputs, serial or otherwise.
+	 * <br>
+	 * NOTE: This command resets the angle variable that is
+	 * returned in Sensors packets 20, 2 and 6.
+	 * @param angle signed angle in degrees
+	 */
 	public void scriptWaitAngle(int angle) {
 		int[] a = twoByteSigned(angle);
 		sendByte(156);
@@ -602,6 +735,14 @@ public class IRobotCreateV1 {
 		sendByte(a[1]);
 	}
 	
+	/**
+	 * This command causes Create to wait until it detects the
+	 * specified event. Until the specified event is detected,
+	 * Create’s state does not change, nor does it react to any
+	 * inputs, serial or otherwise.
+	 * @param event the event to wait on
+	 * @param inverse true to flip the logic to wait until NOT the event
+	 */
 	public void scriptWaitEvent(EVENT event, boolean inverse) {
 		int e = event.ordinal()+1;
 		if(inverse) e=256-e;
