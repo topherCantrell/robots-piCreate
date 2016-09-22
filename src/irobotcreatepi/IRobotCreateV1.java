@@ -1,22 +1,53 @@
 package irobotcreatepi;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class IRobotCreateV1 {
-	
-	public abstract void sendByte(int value);	
-	public abstract int readByte();	
+/**
+ *  For V1 the default comm is 57600, no parity, 1 stop, no flow.
+ * 
+ * You MUST send the passive mode command at startup. Set the mode to PASSIVE.
+ * Then wait one second for the mode to change. THEN you can talk to the controller.
+ */
+public class IRobotCreateV1 {
+		
+	private InputStream is;
+	private OutputStream os;
 	
 	private Map<SENSOR_PACKET,Integer[]> cachedSensorPackets = new HashMap<SENSOR_PACKET,Integer[]>();
 	
+	private void sendByte(int value) {
+		try {
+			os.write(value);
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}	
+	
+	private int readByte() {
+		try {
+			while(true) {
+				int ret = is.read();
+				if(ret>=0) return ret;
+				try{Thread.sleep(10);} catch (Exception e) {}
+			}			
+		} catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+	
 	/**
-	 * For V1 the default comm is 57600, no parity, 1 stop, no flow.
-	 * 
-	 * You MUST send the passive mode command at startup. Set the mode to PASSIVE.
-	 * Then wait one second for the mode to change. THEN you can talk to the controller.
+	 * Create an object to talk to the iRobot OI version one.
+	 * @param is the input stream from the robot
+	 * @param os the output stream to the robot
 	 */
+	public IRobotCreateV1(InputStream is, OutputStream os) {
+		this.is = is;
+		this.os = os;
+	}	
 		
 	public enum MODE {PASSIVE, SAFE, FULL}
 	
@@ -28,7 +59,7 @@ public abstract class IRobotCreateV1 {
 		
 		P00_GROUP0(26), // 256 bytes  7-26
 		P01_GROUP1(10), //  10 bytes  7-16
-		P02_GROUP2(6), //   6 bytes 17-20    
+		P02_GROUP2(6),  //   6 bytes 17-20    
 		P03_GROUP3(10), //  10 bytes 21-26
 		P04_GROUP4(14), //  14 bytes 27-34
 		P05_GROUP5(12), //  12 bytes 35-42

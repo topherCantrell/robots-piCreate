@@ -2,6 +2,8 @@ package irobotcreatepi;
 
 import java.util.Arrays;
 
+import gnu.io.CommPortIdentifier;
+import gnu.io.SerialPort;
 import irobotcreatepi.IRobotCreateV1.SENSOR_PACKET;
 
 public class TinkerV1 {
@@ -11,8 +13,14 @@ public class TinkerV1 {
 		//String devname = "/dev/ttyUSB0"; // Pi
 		String devname = "COM4"; // PC
 		
+		CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(devname);
+		SerialPort serialPort = (SerialPort) portIdentifier.open("CreatePi",2000);					
+		serialPort.setSerialPortParams(57600,SerialPort.DATABITS_8,SerialPort.STOPBITS_1,SerialPort.PARITY_NONE);
+		serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);		
+		serialPort.setInputBufferSize(256);
+		
 		System.out.println("USING PORT '"+devname+"'");
-		IRobotCreateV1 robot = new IRobotCreateV1Serial(devname);
+		IRobotCreateV1 robot = new IRobotCreateV1(serialPort.getInputStream(),serialPort.getOutputStream());
 		
 		robot.setMode(IRobotCreateV1.MODE.PASSIVE); // Required at startup
 		Thread.sleep(1000); // Wait for mode change	
