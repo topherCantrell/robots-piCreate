@@ -7,19 +7,39 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *  For V1 the default comm is 57600, no parity, 1 stop, no flow.
- * 
+ * This class encapsulates the Create Open Interface (version 1) serial interface.
+ * <p> 
+ * For OI version 1 the default communication is 57600, no-parity, 1-stop, no-flow.
+ * <p>
  * You MUST send the passive mode command at startup. Set the mode to PASSIVE.
- * Then wait one second for the mode to change. THEN you can talk to the controller.
+ * Then wait one second for the mode to change. THEN you can talk to the Create using
+ * the OI protocol.
+ * <p>
+ * There are several sensor-packets you can request from the Create. There are 6 groups of
+ * sensors you can request. These are commonly-used groupings. There are three ways to
+ * get sensor information:
+ * <p><ul>
+ * <li> request a single packet (or group) and get back all the raw bytes
+ * <li> request a list of packets (or groups) and get back all the raw bytes
+ * <li> schedule a list of packets (or groups) for Create to send back every 15ms. Then
+ *      call a method to read the raw bytes when you want them.
+ * </ul>
+ * <p>
+ * In all three cases you have access to the raw bytes. In all three cases the raw bytes are also cached
+ * and you can call the desired "get" packet to decode the raw bytes.
+ * <p>
+ * For instance: <br>
+ *     robot.readSensorPackets(SENSOR_PACKET.P19_DISTANCE, SENSOR_PACKET.P20_ANGLE);
+ *     int dist = robot.getDistanceTraveled(); // signed in mm
+ *     int ang = robot.getAngleTurned(); // signed in degrees
  */
 public class IRobotCreateV1 {
 		
-	private InputStream is;
-	private OutputStream os;
+	private InputStream is;  // Serial input
+	private OutputStream os; // Serial output
 	
-	private Map<SENSOR_PACKET,Integer[]> cachedSensorPackets = new HashMap<SENSOR_PACKET,Integer[]>();
-	// TODO populate this
-	
+	private Map<SENSOR_PACKET,int[]> cachedSensorPackets = new HashMap<SENSOR_PACKET,int[]>();
+		
 	private void sendByte(int value) {
 		try {
 			os.write(value);
@@ -50,21 +70,29 @@ public class IRobotCreateV1 {
 		this.os = os;
 	}	
 		
+	// The Create OI modes
 	public enum MODE {PASSIVE, SAFE, FULL}
 	
+	// The available baud rates
 	public enum BAUD {B300, B600, B1200, B2400, B4800, B9600, B14400, B19200, B28800, B38400, B57600, B115200}
 	
+	// The available demos
 	public enum DEMO {COVER, COVER_DOCK, SPOT_DOCK, MOUSE, DRIVE_FIGURE_EIGHT, WIMP, HOME, TAG, RACHELBEL, BANJO}
 	
+	// Range of sensor packets in each group (used internally)
+	private int[][] SENSOR_GROUP_ENDS = {{7,26},{7,16},{17,20},{21,26},{27,34},{35,42},{7,42}};
+	
+	// Name and size (in bytes) of each sensor packet. The first 7 are groups of sensors.
 	public enum SENSOR_PACKET {
 		
-		P00_GROUP0(26), // 256 bytes  7-26
-		P01_GROUP1(10), //  10 bytes  7-16
-		P02_GROUP2(6),  //   6 bytes 17-20    
-		P03_GROUP3(10), //  10 bytes 21-26
-		P04_GROUP4(14), //  14 bytes 27-34
-		P05_GROUP5(12), //  12 bytes 35-42
-		P06_GROUP6(52), //  52 bytes  7-42		
+		P00_GROUP0(256), // 256 bytes  7-26
+		P01_GROUP1(10),  //  10 bytes  7-16
+		P02_GROUP2(6),   //   6 bytes 17-20    
+		P03_GROUP3(10),  //  10 bytes 21-26
+		P04_GROUP4(14),  //  14 bytes 27-34
+		P05_GROUP5(12),  //  12 bytes 35-42
+		P06_GROUP6(52),  //  52 bytes  7-42		
+		//
 		P07_BUMPS_AND_WHEEL_DROPS(1),  //4:Wheeldrop Caster, 3:Wheeldrop left, 2:Wheeldrop right, 1:Bump left, 0:Bump Right
 		P08_WALL(1), // 0:Wall seen
 		P09_CLIFF_LEFT(1), // 0:Cliff seen
@@ -117,6 +145,7 @@ public class IRobotCreateV1 {
 		
 	}
 	
+	// The events you can "wait" on
 	public enum EVENT {
 		WHEEL_DROP,
 		FRONT_WHEEL_DROP,
@@ -297,6 +326,14 @@ public class IRobotCreateV1 {
 		value = value & 0xFFFF;
 		ret[0] = value >> 8;
 		ret[1] = value & 0xFF;
+		return ret;
+	}
+	
+	private int fromTwoByteSigned(int high, int low) {
+		int ret = (high<<8) | low;
+		if(ret>0x7FFF) {
+			ret = ret | 0xFFFF0000;
+		}
 		return ret;
 	}
 	
@@ -520,11 +557,31 @@ public class IRobotCreateV1 {
 	public int[] readSensorPacket(SENSOR_PACKET packetID) {
 		sendByte(142);
 		sendByte(packetID.ordinal());
-		int [] ret = new int[packetID.getNumBytes()];
-		for(int x=0;x<ret.length;++x) {
-			ret[x] = readByte();
+		return readSensorData(packetID);
+	}
+	
+	// Read and cache a single regular sensor packet or a group of regular sensor packets
+	private int[] readSensorData(SENSOR_PACKET packetID) {		
+		int ord = packetID.ordinal();
+		if(ord<7) { // This is a group of packets
+			int [] ret = new int[packetID.getNumBytes()];
+			int pos = 0;
+			for(int i=SENSOR_GROUP_ENDS[ord][0]; i<=SENSOR_GROUP_ENDS[ord][1];++i) {
+				SENSOR_PACKET gp = SENSOR_PACKET.values()[i];
+				int [] pdata = readSensorData(gp);
+				for(int x=0;x<pdata.length;++x) {
+					ret[pos++] = pdata[x];
+				}
+			}
+			return ret;
+		} else { // This is a regular packet		
+			int [] ret = new int[packetID.getNumBytes()];
+			for(int x=0;x<ret.length;++x) {
+				ret[x] = readByte();
+			}		
+			cachedSensorPackets.put(packetID, ret);		
+			return ret;
 		}
-		return ret;
 	}
 	
 	/**
@@ -543,9 +600,13 @@ public class IRobotCreateV1 {
 			totalSize += id.getNumBytes();
 		}
 		int [] ret = new int[totalSize];
-		for(int x=0;x<ret.length;++x) {
-			ret[x] = readByte();
-		}
+		int pos = 0;
+		for(SENSOR_PACKET id : packetIDs) {
+			int [] pdata = readSensorData(id);
+			for(int x=0;x<pdata.length;++x) {
+				ret[pos++] = pdata[x];
+			}			
+		}		
 		return ret;
 	}
 	
@@ -598,6 +659,9 @@ public class IRobotCreateV1 {
 	 * of all of the bytes between the header and the checksum.
 	 * That is, if you add all of the bytes after the checksum, and
 	 * the checksum, the low byte of the result will be 0.
+	 * <br>
+	 * If you have gotten out of sync with the stream then you can call
+	 * this repeatedly to sync back up with the value-19 header.
 	 * @param packetIDs list of requested packets
 	 * @return raw sensor bytes (in order) WITHOUT header or checksum or null if format error
 	 */
@@ -625,12 +689,15 @@ public class IRobotCreateV1 {
 			prot = readByte();
 			chk += prot;
 			chk = chk & 0xFF;
-			if(prot!=id.ordinal()) return null;
-			for(int x=0;x<id.getNumBytes();++x) {
+			if(prot!=id.ordinal()) return null;			
+			int [] pdata = readSensorData(id);			
+			for(int x=0;x<pdata.length;++x) {
+				chk = chk + pdata[x];
 				prot = readByte();
-				ret[pos++] = prot;
+				ret[pos++] = pdata[x];
 				chk = chk & 0xFF;
 			}
+			cachedSensorPackets.put(id, pdata);
 		}
 		
 		// Now add in the checksum value at the end of the stream
@@ -753,10 +820,14 @@ public class IRobotCreateV1 {
 	// When you read a sensor packet the result is cached and can be decoded
 	// with these getters.
 	
-	// TODO javadoc these
-	
+	/**
+	 * The state of the bumper (0 = no bump, 1 = bump) and wheel
+	 * drop sensors (0 = wheel raised, 1 = wheel dropped) are sent
+	 * as individual bits.	
+	 * @return all five bits 4:drop-caster, 3:drop-left, 2:drop-right, 1:bump-left, 0-bump-right
+	 */
 	public int getBumpsAndDrops() {
-		Integer[] cache = cachedSensorPackets.get(SENSOR_PACKET.P07_BUMPS_AND_WHEEL_DROPS);
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P07_BUMPS_AND_WHEEL_DROPS);
 		return cache[0];
 	}	
 	public boolean isWheeldropCaster() {
@@ -774,95 +845,471 @@ public class IRobotCreateV1 {
 	public boolean isBumpRight() {
 		return (getBumpsAndDrops()&1)>0;
 	}	
+	
+	/**
+	 * The state of the wall sensor is sent as a 1 bit value
+	 * @return true if seen
+	 */
 	public boolean isWall() {
-		Integer[] cache = cachedSensorPackets.get(SENSOR_PACKET.P08_WALL);
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P08_WALL);
 		return cache[0]>0;
 	}
+	
+	/**
+	 * The state of the cliff sensor on the left side of Create is
+	 * sent as a 1 bit value (0 = no cliff, 1 = cliff).
+	 * @return true if cliff
+	 */
 	public boolean isCliffLeft() {
-		Integer[] cache = cachedSensorPackets.get(SENSOR_PACKET.P09_CLIFF_LEFT);
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P09_CLIFF_LEFT);
 		return cache[0]>0;
 	}
+	
+	/**
+	 * The state of the cliff sensor on the front left of Create is
+     * sent as a 1 bit value (0 = no cliff, 1 = cliff).
+	 * @return true if cliff
+	 */
 	public boolean isCliffFrontLeft() {
-		Integer[] cache = cachedSensorPackets.get(SENSOR_PACKET.P10_CLIFF_FRONT_LEFT);
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P10_CLIFF_FRONT_LEFT);
 		return cache[0]>0;
 	}
+	
+	/**
+	 * The state of the cliff sensor on the front right of Create is
+	 * sent as a 1 bit value (0 = no cliff, 1 = cliff).
+	 * @return true if cliff
+	 */
 	public boolean isCliffFrontRight() {
-		Integer[] cache = cachedSensorPackets.get(SENSOR_PACKET.P11_CLIFF_FRONT_RIGHT);
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P11_CLIFF_FRONT_RIGHT);
 		return cache[0]>0;
 	}
+	
+	/**
+	 * The state of the cliff sensor on the right side of Create is
+     * sent as a 1 bit value (0 = no cliff, 1 = cliff).
+	 * @return true if cliff
+	 */
 	public boolean isCliffRight() {
-		Integer[] cache = cachedSensorPackets.get(SENSOR_PACKET.P12_CLIFF_RIGHT);
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P12_CLIFF_RIGHT);
 		return cache[0]>0;
 	}
+	
+	/**
+	 * The state of the virtual wall detector is sent as a 1 bit value
+	 * (0 = no virtual wall detected, 1 = virtual wall detected).
+	 * Note that the force field on top of the Home Base also trips
+	 * this sensor.
+	 * @return true if wall
+	 */
 	public boolean isVirtualWall() {
-		Integer[] cache = cachedSensorPackets.get(SENSOR_PACKET.P13_VIRTUAL_WALL);
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P13_VIRTUAL_WALL);
 		return cache[0]>0;
 	}	
+	
+	/**
+	 * The state of the three Low Side driver and two wheel
+	 * overcurrent sensors are sent as individual bits (0 = no
+	 * overcurrent, 1 = overcurrent). LDA 0.5A, LD1 0.5A, LD2 1.6A, Wheels 1.0A
+	 * @return 5 bits 4:left-wheel, 3:right-wheel, 2:LD2, 1:LD0, 0:LD1
+	 */
 	public int getOvercurrents() {
-		Integer[] cache = cachedSensorPackets.get(SENSOR_PACKET.P14_LOW_SIDE_DRIVER_AND_WHEEL_OVERCURRENTS);
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P14_LOW_SIDE_DRIVER_AND_WHEEL_OVERCURRENTS);
 		return cache[0];
 	}
+	/**
+	 * The state of the overcurrent.
+	 * @return true if overcurrent
+	 */
 	public boolean isLeftWheelOvercurrent() {
 		return (getOvercurrents()&16)>0;
 	}
+	/**
+	 * The state of the overcurrent.
+	 * @return true if overcurrent
+	 */
 	public boolean isRightWheelOvercurrent() {
 		return (getOvercurrents()&8)>0;		
 	}
+	/**
+	 * The state of the overcurrent.
+	 * @return true if overcurrent
+	 */
 	public boolean isLD2Overcurrent() {
 		return (getOvercurrents()&4)>0;
 	}
+	/**
+	 * The state of the overcurrent.
+	 * @return true if overcurrent
+	 */
 	public boolean isLD1Overcurrent() {
 		return (getOvercurrents()&1)>0;
 	}
+	/**
+	 * The state of the overcurrent.
+	 * @return true if overcurrent
+	 */
 	public boolean isLD0Overcurrent() {
 		return (getOvercurrents()&2)>0;
 	}	
+	
+	/**
+	 * This value identifies the IR byte currently being received
+	 * by iRobot Create. A value of 255 indicates that no IR byte
+	 * is being received. These bytes include those sent by the
+	 * Roomba Remote, the Home Base, Create robots using the
+	 * Send IR command, and user-created devices.
+	 * @return the byte from the IR or 255 if none
+	 */
 	public int getInfraredByte() {
-		Integer[] cache = cachedSensorPackets.get(SENSOR_PACKET.P17_INFRARED_BYTE);
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P17_INFRARED_BYTE);
 		return cache[0];
 	}
+	
+	/**
+	 * The state of Create’s Play and Advance buttons are sent as
+	 * individual bits (0 = button not pressed, 1 = button pressed).
+	 * @return the bits 2:advance, 0:play
+	 */
 	public int getButtons() {
-		Integer[] cache = cachedSensorPackets.get(SENSOR_PACKET.P18_BUTTONS);
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P18_BUTTONS);
 		return cache[0];
 	}
+	/**
+	 * State of the ADVANCE button.
+	 * @return true if pressed
+	 */
 	public boolean isButtonAdv() {
 		return (getButtons()&4)>0;
 	}
+	/**
+	 * State of the PLAY button. 
+	 * @return true if pressed
+	 */
 	public boolean isButtonPlay() {
 		return (getButtons()&1)>0;
 	}	
 	
-	// TODO
-	public int getDistanceTraveled() {return 0;}
-	public int getAngleTurned() {return 0;}	
-	public int getChargingState() {return 0;}
-	public int getVoltage() {return 0;}
-	public int getCurrent() {return 0;}
-	public int getBatteryTemperature() {return 0;}
-	public int getBatteryCharge() {return 0;}
-	public int getBatteryCapacity() {return 0;}	
-	public int getWallSignal() {return 0;}
-	public int getCliffLeftSignal() {return 0;}
-	public int getCliffFrontLeftSignal() {return 0;}
-	public int getCliffFrontRightSignal() {return 0;}
-	public int getCliffRightSignal() {return 0;}
-	public int getCagoBayDigitalInputs() {return 0;}	
-	public boolean isCargoBayIn0() {return false;}
-	public boolean isCargoBayIn1() {return false;}
-	public boolean isCargoBayIn2() {return false;}
-	public boolean isCargoBayIn3() {return false;}
-	public boolean isCargoBayBaudChange() {return false;}	
-	public int getCargoBayAnalogSignal() {return 0;}
-	public int getChargingSourcesAvaialable() {return 0;}	
-	public boolean isHomeBaseChargerAvailable() {return false;}
-	public boolean isInternalChargerAvailable() {return false;}	
-	public MODE getOIMode() {return null;}
-	public int getPlayingSongNumber() {return 0;}
-	public boolean isSongPlaying() {return false;}
-	public int getNumberStreamPackets() {return 0;}
-	public int getRequestedVelocity() {return 0;}
-	public int getRequestedRadius() {return 0;}
-	public int getRequestedRightVelocity() {return 0;}
-	public int getRequestedLeftVeloicty() {return 0;}	
+	/**
+	 * The distance that Create has traveled in millimeters since the
+	 * distance it was last requested is sent as a signed 16-bit value,
+	 * high byte first. This is the same as the sum of the distance
+	 * traveled by both wheels divided by two. Positive values indicate
+	 * travel in the forward direction; negative values indicate travel
+	 * in the reverse direction. If the value is not polled frequently
+	 * enough, it is capped at its minimum or maximum.
+	 * @return distance traveled in mm (signed)
+	 */
+	public int getDistanceTraveled() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P19_DISTANCE);
+		return fromTwoByteSigned(cache[0],cache[1]);
+	}
+	
+	/**
+	 * The angle in degrees that iRobot Create has turned since the
+	 * angle was last requested is sent as a signed 16-bit value, high
+	 * byte first. Counter-clockwise angles are positive and clockwise
+	 * angles are negative. If the value is not polled frequently
+	 * enough, it is capped at its minimum or maximum.
+	 * <br>
+	 * Range: -32768 – 32767
+	 * <br>
+	 * NOTE: Create uses wheel encoders to measure distance
+	 * and angle. If the wheels slip, the actual distance or angle
+	 * traveled may differ from Create’s measurements.
+	 * @return angle turned
+	 */
+	public int getAngleTurned()  {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P20_ANGLE);
+		return fromTwoByteSigned(cache[0],cache[1]);
+	}	
+	
+	/**
+	 * This code indicates Create’s current charging state. 
+	 * @return 0:not-charging, 1:reconditioning-charging, 2:full-charging, 3:trickle-charging, 4:waiting, 5:charging-fault
+	 */
+	public int getChargingState() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P21_CHARGING_STATE);
+		return cache[0];
+	}
+	
+	/**
+	 * This code indicates the voltage of Create’s battery in
+     * millivolts (mV).
+	 * @return battery voltage in mV
+	 */
+	public int getVoltage() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P22_VOLTAGE);
+		return fromTwoByteSigned(cache[0],cache[1]);
+	}
+	
+	/**
+	 * The current in milliamps (mA) flowing into or out of Create’s
+	 * battery. Negative currents indicate that the current is flowing
+	 * out of the battery, as during normal running. Positive currents
+	 * indicate that the current is flowing into the battery, as during
+	 * charging. 
+	 * @return current in mA
+	 */
+	public int getCurrent() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P23_CURRENT);
+		return fromTwoByteSigned(cache[0],cache[1]);
+	}
+	
+	/**
+	 * The temperature of Create’s battery in degrees Celsius (signed).
+	 * @return the battery temp in degrees C
+	 */
+	public int getBatteryTemperature() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P24_BATTERY_TEMPERATURE);
+		return cache[0];
+	}
+	
+	/**
+	 * The current charge of Create’s battery in milliamp-hours (mAh).
+	 * The charge value decreases as the battery is depleted
+	 * during running and increases when the battery is charged.
+	 * Note that this value will not be accurate if you are using the
+	 * alkaline battery pack.
+	 * @return battery charge in mAh
+	 */
+	public int getBatteryCharge() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P25_BATTERY_CHARGE);
+		return fromTwoByteSigned(cache[0],cache[1]);
+	}
+	
+	/**
+	 * The estimated charge capacity of Create’s battery in milliamphours
+	 * (mAh). Note that this value is inaccurate if you are using
+	 * the alkaline battery pack.
+	 * @return estimated batery capacity in mAh
+	 */
+	public int getBatteryCapacity() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P26_BATTERY_CAPACITY);
+		return fromTwoByteSigned(cache[0],cache[1]);
+	}	
+	
+	/**
+	 * The strength of the wall sensor’s signal is returned as an
+     * unsigned 16-bit value, high byte first.
+	 * @return strength of signal 0-4095
+	 */
+	public int getWallSignal() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P27_WALL_SIGNAL);
+		return (cache[0]<<8) | cache[1];
+	}
+	
+	/**
+	 * The strength of the left cliff sensor’s signal is returned as an
+	 * unsigned 16-bit value, high byte first.
+	 * @return strength of signal 0-4095
+	 */
+	public int getCliffLeftSignal() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P28_CLIFF_LEFT_SIGNAL);
+		return (cache[0]<<8) | cache[1];
+	}
+	
+    /**
+     * The strength of the front left cliff sensor’s signal is returned as
+	 * an unsigned 16-bit value, high byte first.
+     * @return strength of signal 0-4095
+     */
+	public int getCliffFrontLeftSignal() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P29_CLIFF_FRONT_LEFT_SIGNAL);
+		return (cache[0]<<8) | cache[1];
+	}
+	
+	/**
+	 * The strength of the front right cliff sensor’s signal is returned as
+	 * an unsigned 16-bit value, high byte first.
+  	 * @return strength of signal 0-4095
+	 */
+	public int getCliffFrontRightSignal() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P30_CLIFF_FRONT_RIGHT_SIGNAL);
+		return (cache[0]<<8) | cache[1];
+	}
+	
+	/**
+	 * The strength of the right cliff sensor’s signal is returned as an
+	 * unsigned 16-bit value, high byte first.
+	 * @return strength of signal 0-4095
+	 */
+	public int getCliffRightSignal() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P31_CLIFF_RIGHT_SIGNAL);
+		return (cache[0]<<8) | cache[1];
+	}
+	
+	/**
+	 * The state of the digital inputs on the 25-pin Cargo Bay Connector
+	 * are sent as individual bits (0 = low, 1 = high (5V)). Note that the
+     * Baud Rate Change pin is active low; it is high by default.
+     * <br>
+     * Device Detect pin can be used to change Baud Rate. When
+	 * device detect/baud rate change Bit is low, the Baud Rate
+	 * is 19200. Otherwise it it 57600
+	 * @return the input bits 4:baud-rate, 3:in3, 2:in2, 1:in1, 0:in0
+	 */
+	public int getCargoBayDigitalInputs() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P32_CARGO_BAY_DIGITIAL_INPUTS);
+		return cache[0];
+	}	
+	
+	/**
+	 * State of cargo-bay input 0.
+	 * @return true if input is high
+	 */
+	public boolean isCargoBayIn0() {
+		return (getCargoBayDigitalInputs()&1) > 0;
+	}
+	
+	/**
+	 * State of cargo-bay input 1.
+	 * @return true if input is high
+	 */
+	public boolean isCargoBayIn1() {
+		return (getCargoBayDigitalInputs()&2) > 0;
+	}
+	
+	/**
+	 * State of cargo-bay input 2.
+	 * @return true if input is high
+	 */
+	public boolean isCargoBayIn2() {
+		return (getCargoBayDigitalInputs()&4) > 0;
+	}
+	
+	/**
+	 * State of cargo-bay input 3.
+	 * @return true if input is high
+	 */
+	public boolean isCargoBayIn3() {
+		return (getCargoBayDigitalInputs()&8) > 0;
+	}
+	
+	/**
+	 * State of cargo-bay baud change.
+	 * @return true if input is high
+	 */
+	public boolean isCargoBayBaudChange() {
+		return (getCargoBayDigitalInputs()&16) > 0;
+	}
+	
+	/**
+	 * The 10-bit value of the analog input on the 25-pin Cargo Bay
+	 * Connector is returned, high byte first. 0 = 0 volts; 1023 = 5
+	 * volts. The analog input is on pin 4.
+	 * @return the analog value 0 to 1023=5V
+	 */
+	public int getCargoBayAnalogSignal()  {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P33_CARGO_BAY_ANALOG_SIGNAL);
+		return (cache[0]<<8) | cache[1];
+	}
+	
+	/**
+	 * iRobot Create’s connection to the Home Base and Internal
+     * Charger are returned as individual bits, as below. 
+	 * @return bits for all charging sources 1:Home-base, 0:Internal-charger
+	 */
+	public int getChargingSourcesAvailable() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P34_CHARGING_SOURCES_AVAILABLE);
+		return cache[0];
+	}	
+	
+	/**
+	 * Returns the availability of the home base charger.
+	 * @return true if available
+	 */
+	public boolean isHomeBaseChargerAvailable() {
+		return (getChargingSourcesAvailable()&2)>0;
+	}
+	
+	/**
+	 * Returns the availability of the internal charger.
+	 * @return true if available
+	 */
+	public boolean isInternalChargerAvailable() {
+		return (getChargingSourcesAvailable()&1)>0;
+	}
+	
+	/**
+	 * Create’s connection to the Home Base and Internal Charger
+     * are returned as individual bits, as below. 
+	 * @return the current OI mode or null if off
+	 */
+	public MODE getOIMode() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P35_OI_MODE);
+		if(cache[0]==0) return null;
+		return MODE.values()[cache[0]-1];
+	}
+	
+	/**
+	 * The currently selected OI song is returned.
+	 * @return currently playing song
+	 */
+	public int getPlayingSongNumber() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P36_SONG_NUMBER);
+		return cache[0];
+	}
+	
+	/**
+	 * The state of the OI song player is returned. 1 = OI song
+     * currently playing; 0 = OI song not playing.
+	 * @return true if a song is playing
+	 */
+	public boolean isSongPlaying() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P37_SONG_PLAYING);
+		return cache[0]>0;
+	}
+	
+	/**
+	 * The number of data stream packets is returned. 
+	 * @return number of packets
+	 */
+	public int getNumberStreamPackets() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P38_NUMBER_OF_STREAM_PACKETS);
+		return cache[0];
+	}
+	
+	/**
+	 * The velocity most recently requested with a Drive command
+	 * is returned as a signed 16-bit number, high byte first. 
+	 * @return the last requested velocity in mm/s (signed)
+	 */
+	public int getRequestedVelocity() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P39_REQUESTED_VELOCITY);
+		return fromTwoByteSigned(cache[0],cache[1]);
+	}
+	
+	/**
+	 * The radius most recently requested with a Drive command
+	 * is returned as a signed 16-bit number, high byte first.
+	 * @return the last requested radius in mm (signed)
+	 */
+	public int getRequestedRadius() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P40_REQUESTED_RADIUS);
+		return fromTwoByteSigned(cache[0],cache[1]);
+	}
+	
+	/**
+	 * The right wheel velocity most recently requested with a Drive
+	 * Direct command is returned as a signed 16-bit number,
+	 * high byte first.
+	 * @return the last requested right wheel velocity in mm/s (signed)
+	 */
+	public int getRequestedRightVelocity() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P41_REQUESTED_RIGHT_VELOCITY);
+		return fromTwoByteSigned(cache[0],cache[1]);
+	}
+	
+	/**
+	 * The left wheel velocity most recently requested with a Drive
+	 * Direct command is returned as a signed 16-bit number,
+	 * high byte first.
+	 * @return the last requested left wheel velocity in mm/s (signed)
+	 */
+	public int getRequestedLeftVeloicty() {
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P42_REQUESTED_LEFT_VELOCITY);
+		return fromTwoByteSigned(cache[0],cache[1]);
+	}	
 
 }
