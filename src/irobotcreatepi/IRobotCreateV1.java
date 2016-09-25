@@ -52,7 +52,10 @@ public class IRobotCreateV1 {
 		try {
 			while(true) {
 				int ret = is.read();
-				if(ret>=0) return ret;
+				if(ret>=0) {
+					//System.out.println(":"+ret);
+					return ret;
+				}
 				try{Thread.sleep(10);} catch (Exception e) {}
 			}			
 		} catch (Exception ex) {
@@ -674,34 +677,41 @@ public class IRobotCreateV1 {
 		}
 		int [] ret = new int[totalSize];
 		
-		// Header byte must be 19
-		int prot = readByte();
-		if(prot!=19) return null;
+		int chk = 0;
 		
-		int chk = readByte(); // Total number of bytes ... first contribution to checksum
+		// Header byte must be 19		
+		int retry = totalSize; // We will look for 19 to sync up
+		int prot;
+		while(true) {
+			prot = readByte();
+			if(prot==19) break;
+			--retry;
+			if(retry==0) return null;
+		}
+		chk += prot;chk = chk & 0xFF;
+		
+		prot = readByte(); // Total number of bytes
+		chk += prot;chk = chk & 0xFF;
 		
 		// Make sure we agree with the robot on what is being sent
-		if(chk!=totalSize+packetIDs.length) return null;
+		if(prot!=totalSize+packetIDs.length) return null;
 		
 		// Fill up the return data
 		int pos=0;		
 		for(SENSOR_PACKET id : packetIDs) {
 			prot = readByte();
-			chk += prot;
-			chk = chk & 0xFF;
+			chk += prot;chk = chk & 0xFF;			
 			if(prot!=id.ordinal()) return null;			
 			int [] pdata = readSensorData(id);			
 			for(int x=0;x<pdata.length;++x) {
-				chk = chk + pdata[x];
-				prot = readByte();
-				ret[pos++] = pdata[x];
-				chk = chk & 0xFF;
+				chk = chk + pdata[x];chk = chk & 0xFF;
+				ret[pos++] = pdata[x];				
 			}
 			cachedSensorPackets.put(id, pdata);
 		}
 		
 		// Now add in the checksum value at the end of the stream
-		chk = chk + readByte();
+		chk = chk + readByte();chk = chk & 0xFF;		
 		
 		if(chk!=0) return null;		
 		
