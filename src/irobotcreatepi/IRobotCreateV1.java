@@ -65,6 +65,23 @@ public class IRobotCreateV1 {
 		}
 	}
 	
+	// Used in multi-byte math
+	private int[] twoByteSigned(int value) {
+		int [] ret = new int[2];
+		if(value<0) value=value+0x10000;
+		value = value & 0xFFFF;
+		ret[0] = value >> 8;
+		ret[1] = value & 0xFF;
+		return ret;
+	}	
+	private int fromTwoByteSigned(int high, int low) {
+		int ret = (high<<8) | low;
+		if(ret>0x7FFF) {
+			ret = ret | 0xFFFF0000;
+		}
+		return ret;
+	}
+	
 	/**
 	 * Create an object to talk to the iRobot OI version one.
 	 * @param is the input stream from the robot
@@ -267,44 +284,44 @@ public class IRobotCreateV1 {
 	
 	/**
 	 * The following are commands to start iRobot Create's
-     * built-in demos. 
-     * <p>
-     * Cover: Create attempts to cover an entire
+     * built-in demos.<ul>
+     * 
+     * <li>Cover: Create attempts to cover an entire
      * room using a combination of behaviors,
      * such as random bounce, wall following,
-     * and spiraling.
-     * <p>
-     * Cover and Dock: Identical to the Cover demo, with one
+     * and spiraling.</li>
+     * 
+     * <li>Cover and Dock: Identical to the Cover demo, with one
      * exception. If Create sees an infrared
      * signal from an iRobot Home Base, it
      * uses that signal to dock with the Home
-     * Base and recharge itself.
-     * <p>
-     * Spot Cover: Create covers an area around its
+     * Base and recharge itself.</li>
+     * 
+     * <li>Spot Cover: Create covers an area around its
      * starting position by spiraling outward,
-     * then inward.
-     * <p>
-     * Mouse: Create drives in search of a wall. Once
+     * then inward.</li>
+     * 
+     * <li>Mouse: Create drives in search of a wall. Once
      * a wall is found, Create drives along the
      * wall, traveling around circumference of
-     * the room.
-     * <p>
-     * Drive Figure Eight: Create continuously drives in a figure 8
-     * pattern.
-     * <p>
-     * Wimp: Create drives forward when pushed from
+     * the room.</li>
+     * 
+     * <li>Drive Figure Eight: Create continuously drives in a figure 8
+     * pattern</li>
+     * 
+     * <li>Wimp: Create drives forward when pushed from
      * behind. If Create hits an obstacle while
-     * driving, it drives away from the obstacle.
-     * <p>
-     * Home:Create drives toward an iRobot Virtual
+     * driving, it drives away from the obstacle.</li>
+     * 
+     * <li>Home: Create drives toward an iRobot Virtual
      * Wall as long as the back and sides of
      * the virtual wall receiver are blinded by
      * black electrical tape.
-     * <br> 
+     * <br>
      * A Virtual Wall emits infrared signals
      * that Create sees with its Omnidirectional
      * Infrared Receiver, located on top of the
-     * bumper.
+     * bumper. 
      * <br>
      * If you want Create to home in on a
      * Virtual Wall, cover all but a small
@@ -313,26 +330,25 @@ public class IRobotCreateV1 {
      * <br>
      * Create spins to locate a virtual wall,
      * then drives toward it. Once Create hits
-     * the wall or another obstacle, it stops.
-     * <p>
-     * Tag: Identical to the Home demo, except
+     * the wall or another obstacle, it stops.</li>
+     * 
+     * <li>Tag: Identical to the Home demo, except
      * Create drives into multiple virtual walls
      * by bumping into one, turning around,
      * driving to the next virtual wall, bumping
      * into it and turning around to bump into
-     * the next virtual wall.
-     * <p>
-     * Pachelbel: Create plays the notes of Pachelbel’s
+     * the next virtual wall.</li>
+     * 
+     * <li>Pachelbel: Create plays the notes of Pachelbel’s
      * Canon in sequence when cliff sensors
-     * are activated. 
-     * <p>
-     * Banjo: Create plays a note of a chord for each
+     * are activated.</li> 
+     * 
+     * <li>Banjo: Create plays a note of a chord for each
      * of its four cliff sensors. Select the
      * chord using the bumper, as follows:
-     * <br>No bumper: G major.
-     * <br>Right/left bumper: D major 7
-     * <br>Both bumpers (center): C major 
-     * <p>
+     * <br>- No bumper: G major.
+     * <br>- Right/left bumper: D major 7
+     * <br>- Both bumpers (center): C major</li> 
 	 * @param value desired demo
 	 */
 	public void runDemo(DEMO value) {
@@ -340,36 +356,20 @@ public class IRobotCreateV1 {
 		sendByte(value.ordinal());		
 	}
 	
-	// Used in multi-byte math
-	private int[] twoByteSigned(int value) {
-		int [] ret = new int[2];
-		if(value<0) value=value+0x10000;
-		value = value & 0xFFFF;
-		ret[0] = value >> 8;
-		ret[1] = value & 0xFF;
-		return ret;
-	}
-	
-	private int fromTwoByteSigned(int high, int low) {
-		int ret = (high<<8) | low;
-		if(ret>0x7FFF) {
-			ret = ret | 0xFFFF0000;
-		}
-		return ret;
-	}
-	
 	/**
-	 * Drive in a straight line. See drive().
+	 * Drive in a straight line.
 	 * @param velocity robot velocity -500mm/s to 500mm/s
+	 * @see #drive(int, int)
 	 */
 	public void driveStraight(int velocity) {	
 		drive(velocity, 32768);
 	}
 	
 	/**
-	 * Spin in place. See drive().
+	 * Spin in place.
 	 * @param velocity robot velocity -500mm/s to 500mm/s
 	 * @param clockWise true for clockwise or false for counter clockwise
+	 * @see #drive(int, int)
 	 */
 	public void driveSpin(int velocity, boolean clockWise) {	
 		if(clockWise) {
@@ -380,16 +380,13 @@ public class IRobotCreateV1 {
 	}
 	
 	/**
-	 * This command controls Create’s drive wheels. It takes four
-	 * data bytes, interpreted as two 16-bit signed values using
-	 * two’s complement. The first two bytes specify the average
-	 * velocity of the drive wheels in millimeters per second
-	 * (mm/s), with the high byte being sent first. The next two
-	 * bytes specify the radius in millimeters at which Create will
-	 * turn. The longer radii make Create drive straighter, while
-	 * the shorter radii make Create turn more. The radius is
-	 * measured from the center of the turning circle to the center
-	 * of Create. A Drive command with a positive velocity and a
+	 * This command controls Create's drive wheels. The first parameter
+	 * specifies the average velocity of the drive wheels in millimeters 
+	 * per second (mm/s). The next parameter specifies the radius in 
+	 * millimeters at which Create will turn. The longer radii make Create 
+	 * drive straighter, while the shorter radii make Create turn more. The 
+	 * radius is measured from the center of the turning circle to the 
+	 * center of Create. A Drive command with a positive velocity and a
 	 * positive radius makes Create drive forward while turning
 	 * toward the left. A negative radius makes Create turn toward
 	 * the right. Special cases for the radius make Create turn
@@ -400,6 +397,11 @@ public class IRobotCreateV1 {
 	 * Create from accurately carrying out some drive commands.
 	 * For example, it may not be possible for Create to drive at
 	 * full speed in an arc with a large radius of curvature.
+	 * <p>
+	 * Special cases:<ul>
+	 * <li>Straight = 32768 or 32767 = hex 8000 or 7FFF</li>
+	 * <li>Turn in place clockwise = hex FFFF</li>
+	 * <li>Turn in place counter-clockwise = hex 0001</li></ul>
 	 * @param velocity robot velocity -500mm/s to 500mm/s
 	 * @param radius robot turning radius -2000mm to 2000mm
 	 */
@@ -416,14 +418,12 @@ public class IRobotCreateV1 {
 	
 	/**
 	 * This command lets you control the forward and backward
-	 * motion of Create’s drive wheels independently. It takes
-	 * four data bytes, which are interpreted as two 16-bit signed
-	 * values using two’s complement. The first two bytes specify
-	 * the velocity of the right wheel in millimeters per second
-	 * (mm/s), with the high byte sent first. The next two bytes
-	 * specify the velocity of the left wheel, in the same format.
-	 * A positive velocity makes that wheel drive forward, while a
-	 * negative velocity makes it drive backward. 
+	 * motion of Create’s drive wheels independently. The first 
+	 * parameter specifies the velocity of the right wheel in 
+	 * millimeters per second (mm/s), with the high byte sent first. 
+	 * The next parameter specifies the velocity of the left wheel, 
+	 * in the same format. A positive velocity makes that wheel drive 
+	 * forward, while a negative velocity makes it drive backward. 
 	 * @velocityRight right wheel velocity -500 to 500 mm/s
 	 * @velocityLeft left wheel velocity -500 to 500 mm/s
 	 */
@@ -439,9 +439,9 @@ public class IRobotCreateV1 {
 	
 	/**
 	 * This command controls the LEDs on Create. The state of
-	 * the Play and Advance LEDs is specified by two bits in the
-	 * first data byte. The power LED is specified by two data
-	 * bytes: one for the color and the other for the intensity. 
+	 * the Play and Advance LEDs is specified by two boolean
+	 * parameters. The power LED is controlled by two parameters:
+	 * one for the color and the other for the intensity. 
 	 * @param adv true for Advance light on
 	 * @param play true for Play light on
 	 * @param powerColor color of power LED 0=green to 255=red
@@ -467,7 +467,7 @@ public class IRobotCreateV1 {
 	 * <p>
 	 * Warning: When the Robot is switched ON, the Digital
 	 * Outputs are High for the first 3 seconds during the
-	 * initialization of the bootloader
+	 * initialization of the boot loader.
 	 */
 	public void setDigitalOutputs(boolean out0, boolean out1, boolean out2) {
 		int value = 0;
@@ -480,24 +480,21 @@ public class IRobotCreateV1 {
 	
 	/**
 	 * This command lets you control the three low side drivers
-	 * with variable power. With each data byte, you specify the
-	 * PWM duty cycle for the low side driver (max 128). For
-	 * example, if you want to control a driver with 25% of battery
-	 * voltage, choose a duty cycle of 128 * 25% = 32.
-	 * @param out0 duty cycle 0-128
-	 * @param out1 duty cycle 0-127
-	 * @param out2 duty cycle 0-128
+	 * with variable power. Each parameter is the duty cycle 
+	 * on the given pin from 0% to 100%. 
+	 * @param out0 duty cycle 0.0 to 1.0 (0% to 100%)
+	 * @param out1 duty cycle 0.0 to 1.0 (0% to 100%)
+	 * @param out2 duty cycle 0.0 to 1.0 (0% to 100%)
 	 */
-	public void setLowSideDrivers(int out0, int out1, int out2) {
+	public void setLowSideDrivers(double out0, double out1, double out2) {
 		sendByte(144);
-		sendByte(out2);
-		sendByte(out1);
-		sendByte(out0);
+		sendByte((int)(out2*128));
+		sendByte((int)(out1*128));
+		sendByte((int)(out0*128));
 	}
 	
 	/**
-	 * This command lets you control the three low side drivers. The
-	 * state of each driver is specified by one bit in the data byte.
+	 * This command lets you control the three low side drivers. 
 	 * Low side drivers 0 and 1 can provide up to 0.5A of current.
 	 * Low side driver 2 can provide up to 1.5 A of current. If too
 	 * much current is requested, the current is limited and the
@@ -521,6 +518,7 @@ public class IRobotCreateV1 {
 	 * format expected by iRobot Create’s IR receiver. You must
 	 * use a preload resistor (suggested value: 100 ohms) in
 	 * parallel with the IR LED and its resistor in order turn it on. 
+	 * There is an example schematic in the interface document.
 	 * @param value data byte to send
 	 */
 	public void sendIRByte(int value) {
@@ -535,10 +533,10 @@ public class IRobotCreateV1 {
 	 * number to identify your song selection. Each song can
 	 * contain up to sixteen notes. Each note is associated with a
 	 * note number that uses MIDI note definitions and a duration
-	 * that is specified in fractions of a second. The number of data
-	 * bytes varies, depending on the length of the song specified.
-	 * A one note song is specified by four data bytes. For each
-	 * additional note within a song, add two data bytes.
+	 * that is specified in fractions of a second. The number of 
+	 * parameters varies, depending on the length of the song specified.
+	 * A one note song is specified by two parameters. For each
+	 * additional note within a song, add two parameters.
 	 * @param number song number (0-15)
 	 * @param notes pairs of midi/duration for each note. Midi
 	 * note number 31-127 and duration in increments of 1/64th seconds. 
@@ -650,8 +648,8 @@ public class IRobotCreateV1 {
 	}
 	
 	/**
-	 *  Stops the stream without clearing the list
-	 *  of requested packets.
+	 * Stops the stream without clearing the list
+	 * of requested packets.
 	 */
 	public void pauseStreamSensorPackets() {
 		sendByte(150);
@@ -659,8 +657,8 @@ public class IRobotCreateV1 {
 	}
 	
 	/**
-	 *  Starts the stream
-	 *  using the list of packets last requested.
+	 * Starts the stream
+	 * using the list of packets last requested.
 	 */
 	public void resumeStreamSensorPackets() {
 		sendByte(150);
@@ -668,21 +666,10 @@ public class IRobotCreateV1 {
 	}
 	
 	/**
-	 * Read the packet stream. The format of the data returned is:
-	 * <br>
-	 * [19][N-bytes][Packet ID 1][Packet 1 data…]
-	 * [Packet ID 2][Packet 2 data…][Checksum]
-	 * <br>
-	 * N-bytes is the number of bytes between the n-bytes byte and
-	 * the checksum.
-	 * <br>
-	 * The checksum is a 1-byte value. It is the 8-bit complement
-	 * of all of the bytes between the header and the checksum.
-	 * That is, if you add all of the bytes after the checksum, and
-	 * the checksum, the low byte of the result will be 0.
-	 * <br>
+	 * Read the packets from the sensor stream.
+	 * <p>
 	 * If you have gotten out of sync with the stream then you can call
-	 * this repeatedly to sync back up with the value-19 header.
+	 * this repeatedly to sync back up with the stream's header.
 	 * @param packetIDs list of requested packets
 	 * @return raw sensor bytes (in order) WITHOUT header or checksum or null if format error
 	 */
@@ -739,12 +726,15 @@ public class IRobotCreateV1 {
 	/**
 	 * This command specifies a script to be played later. A script
 	 * consists of OI commands and can be up to 100 bytes long.
-	 * There is no flow control, but “wait” commands (see below)
+	 * There is no flow control, but "wait" commands (see below)
 	 * cause Create to hold its current state until the specified
 	 * event is detected.
 	 * @param script raw script of bytes
 	 */
 	public void storeScript(int ... script) {
+		if(script.length>100) {
+			throw new RuntimeException("100 bytes is the max script length.");
+		}
 		sendByte(152);
 		sendByte(script.length);
 		for(int val : script) {
@@ -765,8 +755,7 @@ public class IRobotCreateV1 {
 	 * script, starting with the number of bytes in the script and
 	 * followed by the script’s commands and data bytes. It first
 	 * halts the sensor stream, if one has been started with a
-	 * Stream or Pause/Resume Stream command. To restart the
-	 * stream, send Pause/Resume Stream (opcode 150).
+	 * Stream or Pause/Resume Stream command.
 	 * @return the stored script
 	 */
 	public int[] readStoreScript() {
@@ -848,6 +837,8 @@ public class IRobotCreateV1 {
 	// When you read a sensor packet the result is cached and can be decoded
 	// with these getters.
 	
+	// Sensor GETters.
+	
 	/**
 	 * The state of the bumper (0 = no bump, 1 = bump) and wheel
 	 * drop sensors (0 = wheel raised, 1 = wheel dropped) are sent
@@ -858,24 +849,44 @@ public class IRobotCreateV1 {
 		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P07_BUMPS_AND_WHEEL_DROPS);
 		return cache[0];
 	}	
+	/**
+	 * The state of the wheeldrop caster sensor.
+	 * @return true if dropped
+	 */
 	public boolean isWheeldropCaster() {
 		return (getBumpsAndDrops()&16)>0;
 	}	
+	/**
+	 * The state of the wheeldrop left sensor.
+	 * @return true if dropped
+	 */
 	public boolean isWheeldropLeft() {
 		return (getBumpsAndDrops()&8)>0;
 	}
+	/**
+	 * The state of the wheeldrop right sensor.
+	 * @return true if dropped
+	 */
 	public boolean isWheeldropRight() {
 		return (getBumpsAndDrops()&4)>0;
 	}
+	/**
+	 * The state of the left bump sensor.
+	 * @return true if dropped
+	 */
 	public boolean isBumpLeft() {
 		return (getBumpsAndDrops()&2)>0;
 	}
+	/**
+	 * The state of the right bump sensor.
+	 * @return true if dropped
+	 */
 	public boolean isBumpRight() {
 		return (getBumpsAndDrops()&1)>0;
 	}	
 	
 	/**
-	 * The state of the wall sensor is sent as a 1 bit value
+	 * The state of the wall sensor.
 	 * @return true if seen
 	 */
 	public boolean isWall() {
@@ -884,8 +895,7 @@ public class IRobotCreateV1 {
 	}
 	
 	/**
-	 * The state of the cliff sensor on the left side of Create is
-	 * sent as a 1 bit value (0 = no cliff, 1 = cliff).
+	 * The state of the cliff sensor on the left side of Create.
 	 * @return true if cliff
 	 */
 	public boolean isCliffLeft() {
@@ -894,8 +904,7 @@ public class IRobotCreateV1 {
 	}
 	
 	/**
-	 * The state of the cliff sensor on the front left of Create is
-     * sent as a 1 bit value (0 = no cliff, 1 = cliff).
+	 * The state of the cliff sensor on the front left of Create.
 	 * @return true if cliff
 	 */
 	public boolean isCliffFrontLeft() {
@@ -904,8 +913,7 @@ public class IRobotCreateV1 {
 	}
 	
 	/**
-	 * The state of the cliff sensor on the front right of Create is
-	 * sent as a 1 bit value (0 = no cliff, 1 = cliff).
+	 * The state of the cliff sensor on the front right of Create.
 	 * @return true if cliff
 	 */
 	public boolean isCliffFrontRight() {
@@ -914,8 +922,7 @@ public class IRobotCreateV1 {
 	}
 	
 	/**
-	 * The state of the cliff sensor on the right side of Create is
-     * sent as a 1 bit value (0 = no cliff, 1 = cliff).
+	 * The state of the cliff sensor on the right side of Create.
 	 * @return true if cliff
 	 */
 	public boolean isCliffRight() {
@@ -924,8 +931,7 @@ public class IRobotCreateV1 {
 	}
 	
 	/**
-	 * The state of the virtual wall detector is sent as a 1 bit value
-	 * (0 = no virtual wall detected, 1 = virtual wall detected).
+	 * The state of the virtual wall detector.
 	 * Note that the force field on top of the Home Base also trips
 	 * this sensor.
 	 * @return true if wall
@@ -987,6 +993,7 @@ public class IRobotCreateV1 {
 	 * is being received. These bytes include those sent by the
 	 * Roomba Remote, the Home Base, Create robots using the
 	 * Send IR command, and user-created devices.
+	 * See the interface document for more information.
 	 * @return the byte from the IR or 255 if none
 	 */
 	public int getInfraredByte() {
@@ -1020,8 +1027,7 @@ public class IRobotCreateV1 {
 	
 	/**
 	 * The distance that Create has traveled in millimeters since the
-	 * distance it was last requested is sent as a signed 16-bit value,
-	 * high byte first. This is the same as the sum of the distance
+	 * distance it was last requested. This is the same as the sum of the distance
 	 * traveled by both wheels divided by two. Positive values indicate
 	 * travel in the forward direction; negative values indicate travel
 	 * in the reverse direction. If the value is not polled frequently
@@ -1035,13 +1041,12 @@ public class IRobotCreateV1 {
 	
 	/**
 	 * The angle in degrees that iRobot Create has turned since the
-	 * angle was last requested is sent as a signed 16-bit value, high
-	 * byte first. Counter-clockwise angles are positive and clockwise
+	 * angle was last requested. Counter-clockwise angles are positive and clockwise
 	 * angles are negative. If the value is not polled frequently
 	 * enough, it is capped at its minimum or maximum.
-	 * <br>
+	 * <p>
 	 * Range: -32768 – 32767
-	 * <br>
+	 * <p>>
 	 * NOTE: Create uses wheel encoders to measure distance
 	 * and angle. If the wheels slip, the actual distance or angle
 	 * traveled may differ from Create’s measurements.
@@ -1118,8 +1123,7 @@ public class IRobotCreateV1 {
 	}	
 	
 	/**
-	 * The strength of the wall sensor’s signal is returned as an
-     * unsigned 16-bit value, high byte first.
+	 * The strength of the wall sensor’s signal.
 	 * @return strength of signal 0-4095
 	 */
 	public int getWallSignal() {
@@ -1128,8 +1132,7 @@ public class IRobotCreateV1 {
 	}
 	
 	/**
-	 * The strength of the left cliff sensor’s signal is returned as an
-	 * unsigned 16-bit value, high byte first.
+	 * The strength of the left cliff sensor’s signal.
 	 * @return strength of signal 0-4095
 	 */
 	public int getCliffLeftSignal() {
@@ -1138,8 +1141,7 @@ public class IRobotCreateV1 {
 	}
 	
     /**
-     * The strength of the front left cliff sensor’s signal is returned as
-	 * an unsigned 16-bit value, high byte first.
+     * The strength of the front left cliff sensor’s signal.
      * @return strength of signal 0-4095
      */
 	public int getCliffFrontLeftSignal() {
@@ -1148,8 +1150,7 @@ public class IRobotCreateV1 {
 	}
 	
 	/**
-	 * The strength of the front right cliff sensor’s signal is returned as
-	 * an unsigned 16-bit value, high byte first.
+	 * The strength of the front right cliff sensor’s signal.
   	 * @return strength of signal 0-4095
 	 */
 	public int getCliffFrontRightSignal() {
@@ -1158,8 +1159,7 @@ public class IRobotCreateV1 {
 	}
 	
 	/**
-	 * The strength of the right cliff sensor’s signal is returned as an
-	 * unsigned 16-bit value, high byte first.
+	 * The strength of the right cliff sensor’s signal.
 	 * @return strength of signal 0-4095
 	 */
 	public int getCliffRightSignal() {
@@ -1171,7 +1171,7 @@ public class IRobotCreateV1 {
 	 * The state of the digital inputs on the 25-pin Cargo Bay Connector
 	 * are sent as individual bits (0 = low, 1 = high (5V)). Note that the
      * Baud Rate Change pin is active low; it is high by default.
-     * <br>
+     * <p>
      * Device Detect pin can be used to change Baud Rate. When
 	 * device detect/baud rate change Bit is low, the Baud Rate
 	 * is 19200. Otherwise it it 57600
@@ -1224,7 +1224,7 @@ public class IRobotCreateV1 {
 	
 	/**
 	 * The 10-bit value of the analog input on the 25-pin Cargo Bay
-	 * Connector is returned, high byte first. 0 = 0 volts; 1023 = 5
+	 * Connector. 0 = 0 volts; 1023 = 5
 	 * volts. The analog input is on pin 4.
 	 * @return the analog value 0 to 1023=5V
 	 */
@@ -1260,14 +1260,12 @@ public class IRobotCreateV1 {
 	}
 	
 	/**
-	 * Create’s connection to the Home Base and Internal Charger
-     * are returned as individual bits, as below. 
-	 * @return the current OI mode or null if off
+	 * The current OI mode.
+	 * @return the current OI mode.
 	 */
 	public MODE getOIMode() {
-		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P35_OI_MODE);
-		if(cache[0]==0) return null;
-		return MODE.values()[cache[0]-1];
+		int[] cache = cachedSensorPackets.get(SENSOR_PACKET.P35_OI_MODE);		
+		return MODE.values()[cache[0]];
 	}
 	
 	/**
@@ -1280,8 +1278,7 @@ public class IRobotCreateV1 {
 	}
 	
 	/**
-	 * The state of the OI song player is returned. 1 = OI song
-     * currently playing; 0 = OI song not playing.
+	 * The state of the OI song player is returned.
 	 * @return true if a song is playing
 	 */
 	public boolean isSongPlaying() {
@@ -1299,8 +1296,7 @@ public class IRobotCreateV1 {
 	}
 	
 	/**
-	 * The velocity most recently requested with a Drive command
-	 * is returned as a signed 16-bit number, high byte first. 
+	 * The velocity most recently requested with a Drive command. 
 	 * @return the last requested velocity in mm/s (signed)
 	 */
 	public int getRequestedVelocity() {
@@ -1309,8 +1305,7 @@ public class IRobotCreateV1 {
 	}
 	
 	/**
-	 * The radius most recently requested with a Drive command
-	 * is returned as a signed 16-bit number, high byte first.
+	 * The radius most recently requested with a Drive command.
 	 * @return the last requested radius in mm (signed)
 	 */
 	public int getRequestedRadius() {
@@ -1320,8 +1315,7 @@ public class IRobotCreateV1 {
 	
 	/**
 	 * The right wheel velocity most recently requested with a Drive
-	 * Direct command is returned as a signed 16-bit number,
-	 * high byte first.
+	 * Direct command.
 	 * @return the last requested right wheel velocity in mm/s (signed)
 	 */
 	public int getRequestedRightVelocity() {
@@ -1331,8 +1325,7 @@ public class IRobotCreateV1 {
 	
 	/**
 	 * The left wheel velocity most recently requested with a Drive
-	 * Direct command is returned as a signed 16-bit number,
-	 * high byte first.
+	 * Direct command.
 	 * @return the last requested left wheel velocity in mm/s (signed)
 	 */
 	public int getRequestedLeftVeloicty() {
