@@ -9,15 +9,15 @@ import java.util.Map;
 /**
  * This class encapsulates the Create Open Interface (version 1) serial interface.
  * <p> 
- * For OI version 1 the default communication is 57600, no-parity, 1-stop, no-flow.
+ * For OI version 1 the default communication is 57600, no-parity-bit, 1-stop-bit, no-flow-control.
  * <p>
- * You MUST send the passive mode command at startup. Set the mode to PASSIVE.
- * Then wait one second for the mode to change. THEN you can talk to the Create using
- * the OI protocol.
+ * You MUST send the passive mode command to activate the interface. Do that by setting the 
+ * mode to PASSIVE first thing. Then wait one second for the mode to change. 
+ * THEN you can talk to the Create using the OI protocol.
  * <p>
  * There are several sensor-packets you can request from the Create. There are 6 groups of
- * sensors you can request. These are commonly-used groupings. There are three ways to
- * get sensor information:
+ * sensor packets you can request. These are commonly-used groupings. There are three ways to
+ * get sensor packet information:
  * <p><ul>
  * <li> request a single packet (or group) and get back all the raw bytes
  * <li> request a list of packets (or groups) and get back all the raw bytes
@@ -25,8 +25,8 @@ import java.util.Map;
  *      call a method to read the raw bytes when you want them.
  * </ul>
  * <p>
- * In all three cases you have access to the raw bytes. In all three cases the raw bytes are also cached
- * and you can call the desired "get" packet to decode the raw bytes.
+ * In all three cases the methods return the raw bytes. In all three cases the raw bytes 
+ * are also cached and you can call the desired "get" packet to decode the raw bytes.
  * <p>
  * For instance: <br>
  *     robot.readSensorPackets(SENSOR_PACKET.P19_DISTANCE, SENSOR_PACKET.P20_ANGLE);
@@ -40,6 +40,7 @@ public class IRobotCreateV1 {
 	
 	private Map<SENSOR_PACKET,int[]> cachedSensorPackets = new HashMap<SENSOR_PACKET,int[]>();
 		
+	// Send a serial byte and promote IOExceptions to runtime (unchecked) exceptions
 	private void sendByte(int value) {
 		try {
 			os.write(value);
@@ -48,6 +49,7 @@ public class IRobotCreateV1 {
 		}
 	}	
 	
+	// Wait for a byte and promote IOExceptions to runtime (unchecked) exceptions
 	private int readByte() {
 		try {
 			while(true) {
@@ -56,7 +58,7 @@ public class IRobotCreateV1 {
 					//System.out.println(":"+ret);
 					return ret;
 				}
-				try{Thread.sleep(10);} catch (Exception e) {}
+				try{Thread.sleep(100);} catch (Exception e) {}
 			}			
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
@@ -73,19 +75,28 @@ public class IRobotCreateV1 {
 		this.os = os;
 	}	
 		
-	// The Create OI modes
-	public enum MODE {PASSIVE, SAFE, FULL}
+	/**
+	 *  The Create OI modes.
+	 */
+	public enum MODE {OFF, PASSIVE, SAFE, FULL}
 	
-	// The available baud rates
+	/**
+	 * Available serial baud rates (default is 57600).
+	 */
 	public enum BAUD {B300, B600, B1200, B2400, B4800, B9600, B14400, B19200, B28800, B38400, B57600, B115200}
 	
-	// The available demos
+	/**
+	 * The Create demo actions.
+	 */
 	public enum DEMO {COVER, COVER_DOCK, SPOT_DOCK, MOUSE, DRIVE_FIGURE_EIGHT, WIMP, HOME, TAG, RACHELBEL, BANJO}
 	
 	// Range of sensor packets in each group (used internally)
 	private int[][] SENSOR_GROUP_ENDS = {{7,26},{7,16},{17,20},{21,26},{27,34},{35,42},{7,42}};
 	
 	// Name and size (in bytes) of each sensor packet. The first 7 are groups of sensors.
+	/**
+	 * The Create sensor packets (the first 7 are groups of other sensor packets).
+	 */
 	public enum SENSOR_PACKET {
 		
 		P00_GROUP0(256), // 256 bytes  7-26
@@ -149,6 +160,9 @@ public class IRobotCreateV1 {
 	}
 	
 	// The events you can "wait" on
+	/**
+     * The events you can have the Create wait on.
+	 */
 	public enum EVENT {
 		WHEEL_DROP,
 		FRONT_WHEEL_DROP,
@@ -190,7 +204,7 @@ public class IRobotCreateV1 {
 	 * <p>
 	 * <b>Note: at a baud rate of 115200, there must be at least
 	 * 200us between the onset of each character, or some
-	 * characters may not be received.<b>
+	 * characters may not be received.</b>
 	 * @param rate the desired baud rate
 	 */
 	public void setBaud(BAUD rate) {	
@@ -217,6 +231,8 @@ public class IRobotCreateV1 {
 	 * Full mode, Create executes any command that you send
 	 * it, even if the internal charger is plugged in, or the robot
 	 * senses a cliff or wheel drop.
+	 * <p>
+	 * You can not put the OI into OFF mode with a serial command
 	 * @param mode the desired mode
 	 */
 	public void setMode(MODE mode) {
@@ -233,6 +249,8 @@ public class IRobotCreateV1 {
 		case SAFE:
 			sendByte(131);
 			break;
+		case OFF:
+			throw new RuntimeException("OFF mode not supported by Create version 1.");
 		default:
 			throw new RuntimeException("Unhandled mode '"+mode+"'");		
 		}		

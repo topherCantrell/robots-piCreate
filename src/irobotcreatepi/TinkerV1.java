@@ -17,7 +17,7 @@ public class TinkerV1 {
 		SerialPort serialPort = (SerialPort) portIdentifier.open("CreatePi",2000);					
 		serialPort.setSerialPortParams(57600,SerialPort.DATABITS_8,SerialPort.STOPBITS_1,SerialPort.PARITY_NONE);
 		serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);		
-		serialPort.setInputBufferSize(256);
+		serialPort.setInputBufferSize(256);		
 		
 		System.out.println("USING PORT '"+devname+"'");
 		IRobotCreateV1 robot = new IRobotCreateV1(serialPort.getInputStream(),serialPort.getOutputStream());
@@ -27,6 +27,7 @@ public class TinkerV1 {
 		
 		robot.setMode(IRobotCreateV1.MODE.FULL);
 		Thread.sleep(1000);
+		
 		
 		//robot.driveSpin(100,true);
 		
@@ -53,7 +54,7 @@ public class TinkerV1 {
 			System.out.println("Cliff to front/left:  "+robot.isCliffFrontLeft()); // 10
 			System.out.println("Cliff to front/right: "+robot.isCliffFrontRight()); // 11
 			System.out.println("Cliff to right:       "+robot.isCliffRight()); //12
-			System.out.println("Virtual wall seen:    "+robot.isVirtualWall()); // 13			
+			System.out.println("Virtual wall seen:    "+robot.isVirtualWall()); // 13	 		
 			//
 			System.out.println("Low side drivers and wheel overcurrents: "+robot.getOvercurrents());
 			System.out.println("  Left wheel overcurrent: "+robot.isLeftWheelOvercurrent());
@@ -115,6 +116,7 @@ public class TinkerV1 {
 		
 		//robot.startStreamSensorPackets(SENSOR_PACKET.P02_GROUP2);
 		
+	
 		for(int x=0;x<8;++x) {
 			int [] dat = robot.readStreamSensorPackets(SENSOR_PACKET.P02_GROUP2);
 			System.out.println(Arrays.toString(dat));
@@ -126,7 +128,7 @@ public class TinkerV1 {
 			int [] dat = robot.readStreamSensorPackets(SENSOR_PACKET.P02_GROUP2);
 			System.out.println(Arrays.toString(dat));
 		}
-		
+	
 		
 		//robot.storeSong(0, 72,8, 76,8, 79,8);
 		//Thread.sleep(1000);
