@@ -22,3 +22,5 @@ This is the landing page for Create:
 
 Here is a project page for Create and the Raspberry Pi:
 [http://www.irobot.com/~/media/MainSite/PDFs/About/STEM/Create/RaspberryPi_Tutorial.pdf](http://www.irobot.com/~/media/MainSite/PDFs/About/STEM/Create/RaspberryPi_Tutorial.pdf)
+
+![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/iRobotDIN.jpg)

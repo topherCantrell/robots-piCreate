@@ -1,3 +1,24 @@
+## 10/1/2016 ##
+
+-  Airlink for pi 2
+-  Rebuild OS pi 2
+-  Build OS pi 3 (for home)
+-  Pictures of create1 and create2
+-  Parts for Will
+
+-  Take costumes to dungeon
+-  Order good spock ears
+-  Build bathroom thingie
+-  Check serialness of red led matrix
+-  Options for showing IP address of pi
+-  Turn off phone notifications for facebook and im
+-  Uninstall phone unified messenger
+
+DONE  Order airlink for pi 1
+DONE  Drill holes in the deco cover
+DONE  art for connector wire colors/functions
+
+
 ## 9/18/2016 ##
 
 Lots of good progress. I am incorporating the OI document into the javadocs. I can read the sensor values, but right now I am
