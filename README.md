@@ -37,7 +37,7 @@ Green:TX out of USB port
 5V converter
 [https://www.adafruit.com/products/1385](https://www.adafruit.com/products/1385)
 
-![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/iRobotDIN.jpg)
+![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/buck.jpg)
 
 ![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/roombaDIN.jpg)
 
