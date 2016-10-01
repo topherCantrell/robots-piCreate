@@ -24,3 +24,21 @@ Here is a project page for Create and the Raspberry Pi:
 [http://www.irobot.com/~/media/MainSite/PDFs/About/STEM/Create/RaspberryPi_Tutorial.pdf](http://www.irobot.com/~/media/MainSite/PDFs/About/STEM/Create/RaspberryPi_Tutorial.pdf)
 
 ![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/iRobotDIN.jpg)
+
+USB to TTL Serial Cable (adafruit)
+
+[https://www.adafruit.com/products/954](https://www.adafruit.com/products/954)
+
+Red: power, 
+Black: ground, 
+White:RX into USB port, 
+Green:TX out of USB port
+
+5V converter
+[https://www.adafruit.com/products/1385](https://www.adafruit.com/products/1385)
+
+![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/iRobotDIN.jpg)
+
+![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/roombaDIN.jpg)
+
+![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/usbserial.jpg)
