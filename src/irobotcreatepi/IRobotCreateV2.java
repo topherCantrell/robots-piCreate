@@ -2,10 +2,6 @@ package irobotcreatepi;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
-
-import irobotcreatepi.IRobotCreateV1.SENSOR_PACKET;
 
 /**
  * This class encapsulates the Create Open Interface (version 2) serial interface.
@@ -36,10 +32,10 @@ import irobotcreatepi.IRobotCreateV1.SENSOR_PACKET;
  */
 public class IRobotCreateV2 {
 	
-	private InputStream is;  // Serial input
+	//private InputStream is;  // Serial input
 	private OutputStream os; // Serial output
 	
-	private Map<SENSOR_PACKET,int[]> cachedSensorPackets = new HashMap<SENSOR_PACKET,int[]>();
+	//private Map<SENSOR_PACKET,int[]> cachedSensorPackets = new HashMap<SENSOR_PACKET,int[]>();
 		
 	// Send a serial byte and promote IOExceptions to runtime (unchecked) exceptions
 	private void sendByte(int value) {
@@ -51,6 +47,7 @@ public class IRobotCreateV2 {
 	}	
 	
 	// Wait for a byte and promote IOExceptions to runtime (unchecked) exceptions
+	/*
 	private int readByte() {
 		try {
 			while(true) {
@@ -65,6 +62,7 @@ public class IRobotCreateV2 {
 			throw new RuntimeException(ex);
 		}
 	}
+	
 	
 	// Used in multi-byte math
 	private int[] twoByteSigned(int value) {
@@ -82,6 +80,7 @@ public class IRobotCreateV2 {
 		}
 		return ret;
 	}
+	*/
 	
 	/**
 	 *  The Create OI modes.
@@ -99,7 +98,7 @@ public class IRobotCreateV2 {
 	 * @param os the output stream to the robot
 	 */
 	public IRobotCreateV2(InputStream is, OutputStream os) {
-		this.is = is;
+		//this.is = is;
 		this.os = os;
 	}		
 	

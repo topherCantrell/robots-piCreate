@@ -46,3 +46,5 @@ On the iCreate1 data goes TO the robot on pin 1 of the cargo bay connector
 ![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/usbserial.jpg)
 
 ![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/picreate1.jpg)
+
+![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/picreate2.jpg)
