@@ -1,17 +1,25 @@
 package irobotcreatepi;
 
-import java.util.Arrays;
+import java.io.File;
 
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
-import irobotcreatepi.IRobotCreateV1.SENSOR_PACKET;
 
 public class TinkerV1 {
 
 	public static void main(String[] args) throws Exception {
 		
-		//String devname = "/dev/ttyUSB0"; // Pi
-		String devname = "COM4"; // PC
+		// Are we running on the pi or on the PC?
+		File f = new File("/etc");
+		String devname;
+		if(f.exists()) {
+			devname = "/dev/ttyUSB0"; // Pi
+		} else {
+			//devname = "COM3"; // PC (prop-plug 1)
+			//devname = "COM4"; // PC (prop-plug 2)
+			devname = "COM7"; // PC (adafruit usb-serial)
+			//devname = "COM6"; // PC (irobot usb-serial)
+		}			
 		
 		CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(devname);
 		SerialPort serialPort = (SerialPort) portIdentifier.open("CreatePi",2000);					
@@ -116,7 +124,7 @@ public class TinkerV1 {
 		
 		//robot.startStreamSensorPackets(SENSOR_PACKET.P02_GROUP2);
 		
-	
+	/*
 		for(int x=0;x<8;++x) {
 			int [] dat = robot.readStreamSensorPackets(SENSOR_PACKET.P02_GROUP2);
 			System.out.println(Arrays.toString(dat));
@@ -128,11 +136,12 @@ public class TinkerV1 {
 			int [] dat = robot.readStreamSensorPackets(SENSOR_PACKET.P02_GROUP2);
 			System.out.println(Arrays.toString(dat));
 		}
+		*/
 	
 		
-		//robot.storeSong(0, 72,8, 76,8, 79,8);
-		//Thread.sleep(1000);
-		//robot.playSong(0);
+		robot.storeSong(0, 72,8, 76,8, 79,8);
+		Thread.sleep(1000);
+		robot.playSong(0);
 
 	}
 

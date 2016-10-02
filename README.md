@@ -34,6 +34,8 @@ Black: ground,
 White:RX into USB port, 
 Green:TX out of USB port
 
+On the iCreate1 data goes TO the robot on pin 1 of the cargo bay connector
+
 5V converter
 [https://www.adafruit.com/products/1385](https://www.adafruit.com/products/1385)
 
@@ -42,3 +44,5 @@ Green:TX out of USB port
 ![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/roombaDIN.jpg)
 
 ![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/usbserial.jpg)
+
+![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/picreate1.jpg)
