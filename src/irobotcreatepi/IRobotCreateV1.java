@@ -116,7 +116,7 @@ public class IRobotCreateV1 {
 	 */
 	public enum SENSOR_PACKET {
 		
-		P00_GROUP0(256), // 256 bytes  7-26
+		P00_GROUP0(26),  //  26 bytes  7-26
 		P01_GROUP1(10),  //  10 bytes  7-16
 		P02_GROUP2(6),   //   6 bytes 17-20    
 		P03_GROUP3(10),  //  10 bytes 21-26
