@@ -107,8 +107,18 @@ public class IRobotCreateV1 {
 	 */
 	public enum DEMO {COVER, COVER_DOCK, SPOT_DOCK, MOUSE, DRIVE_FIGURE_EIGHT, WIMP, HOME, TAG, RACHELBEL, BANJO}
 	
-	// Range of sensor packets in each group (used internally)
-	private int[][] SENSOR_GROUP_ENDS = {{7,26},{7,16},{17,20},{21,26},{27,34},{35,42},{7,42}};
+	// We could do some "first seven" magic here, but version 2 of the interface has some
+	// group ids above 100. The using-code is more shareable with something like this.
+	private static Map<Integer,int[]> SENSOR_GROUPS = new HashMap<Integer,int[]>();
+	static {
+		SENSOR_GROUPS.put(0, new int[]{7,26});
+		SENSOR_GROUPS.put(1, new int[]{7,16});
+		SENSOR_GROUPS.put(2, new int[]{17,20});
+		SENSOR_GROUPS.put(3, new int[]{21,26});
+		SENSOR_GROUPS.put(4, new int[]{27,34});
+		SENSOR_GROUPS.put(5, new int[]{35,42});
+		SENSOR_GROUPS.put(6, new int[]{7,42});
+	}	
 	
 	// Name and size (in bytes) of each sensor packet. The first 7 are groups of sensors.
 	/**
@@ -582,10 +592,11 @@ public class IRobotCreateV1 {
 	// Read and cache a single regular sensor packet or a group of regular sensor packets
 	private int[] readSensorData(SENSOR_PACKET packetID) {		
 		int ord = packetID.ordinal();
-		if(ord<7) { // This is a group of packets
+		int [] ends = SENSOR_GROUPS.get(ord);
+		if(ends!=null) { // This is a group of packets		
 			int [] ret = new int[packetID.getNumBytes()];
 			int pos = 0;
-			for(int i=SENSOR_GROUP_ENDS[ord][0]; i<=SENSOR_GROUP_ENDS[ord][1];++i) {
+			for(int i=ends[0]; i<=ends[1];++i) {
 				SENSOR_PACKET gp = SENSOR_PACKET.values()[i];
 				int [] pdata = readSensorData(gp);
 				for(int x=0;x<pdata.length;++x) {
