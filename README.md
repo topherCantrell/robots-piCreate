@@ -48,3 +48,9 @@ On the iCreate1 data goes TO the robot on pin 1 of the cargo bay connector
 ![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/picreate1.jpg)
 
 ![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/picreate2.jpg)
+
+https://developer.mbed.org/cookbook/iRobot-Create-Robot
+
+http://www.societyofrobots.com/member_tutorials/book/export/html/350
+
+
