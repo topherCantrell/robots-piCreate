@@ -1,22 +1,11 @@
-## 10/1/2016 ##
+## 10/9/2016 ##
 
--  Airlink for pi 2
--  Rebuild OS pi 2
--  Build OS pi 3 (for home)
--  Pictures of create1 and create2
--  Parts for Will
+All the parts are in.
 
--  Take costumes to dungeon
--  Order good spock ears
--  Build bathroom thingie
--  Check serialness of red led matrix
--  Options for showing IP address of pi
--  Turn off phone notifications for facebook and im
--  Uninstall phone unified messenger
-
-DONE  Order airlink for pi 1
-DONE  Drill holes in the deco cover
-DONE  art for connector wire colors/functions
+Reinstall pi1
+USB serial ... green and blue wires to match
+Does battery charge with pi running?
+Power switches
 
 
 ## 9/18/2016 ##

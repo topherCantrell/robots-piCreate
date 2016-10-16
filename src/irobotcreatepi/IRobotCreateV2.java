@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import irobotcreatepi.IRobotCreateV1.SENSOR_PACKET;
-
 import java.util.Set;
 import java.time.DayOfWeek;
 
@@ -81,13 +79,14 @@ public class IRobotCreateV2 {
 		ret[1] = value & 0xFF;
 		return ret;
 	}
+	/*
 	private int fromTwoByteSigned(int high, int low) {
 		int ret = (high<<8) | low;
 		if(ret>0x7FFF) {
 			ret = ret | 0xFFFF0000;
 		}
 		return ret;
-	}
+	}*/
 	
 	/**
 	 *  The Create OI modes.
@@ -99,34 +98,37 @@ public class IRobotCreateV2 {
 	 */
 	public enum BAUD {B300, B600, B1200, B2400, B4800, B9600, B14400, B19200, B28800, B38400, B57600, B115200}
 	
-	// Range of sensor packets in each group (used internally)
-	private int[][] SENSOR_GROUP_ENDS = {
-			{0,   7,26},
-			{1,   7,16},
-			{2,  17,20},
-			{3,  21,26},
-			{4,  27,34},
-			{5,  35,42},
-			{6,   7,42},
-			{100, 7,58},
-			{101, 43,58},
-			{106, 46,51},
-			{107, 54,58}
-	};
+	// We could do some "first seven" magic here, but version 2 of the interface has some
+	// group ids above 100. The using-code is more shareable with something like this.
+	private static Map<SENSOR_PACKET,int[]> SENSOR_GROUPS = new HashMap<SENSOR_PACKET,int[]>();
+	static {
+		SENSOR_GROUPS.put(SENSOR_PACKET.P00_GROUP0, new int[]{7,26});
+		SENSOR_GROUPS.put(SENSOR_PACKET.P01_GROUP1, new int[]{7,16});
+		SENSOR_GROUPS.put(SENSOR_PACKET.P02_GROUP2, new int[]{17,20});
+		SENSOR_GROUPS.put(SENSOR_PACKET.P03_GROUP3, new int[]{21,26});
+		SENSOR_GROUPS.put(SENSOR_PACKET.P04_GROUP4, new int[]{27,34});
+		SENSOR_GROUPS.put(SENSOR_PACKET.P05_GROUP5, new int[]{35,42});
+		SENSOR_GROUPS.put(SENSOR_PACKET.P06_GROUP6, new int[]{7,42});
+		//
+		SENSOR_GROUPS.put(SENSOR_PACKET.P100_GROUP100, new int[]{7,58});
+		SENSOR_GROUPS.put(SENSOR_PACKET.P101_GROUP101, new int[]{43,58});
+		SENSOR_GROUPS.put(SENSOR_PACKET.P106_GROUP106, new int[]{46,51});
+		SENSOR_GROUPS.put(SENSOR_PACKET.P107_GROUP107, new int[]{54,58});
+	}	
 	
 	// Name and size (in bytes) of each sensor packet. The first 7 are groups of sensors.
 	/**
 	 * The Create sensor packets (the first 7 are groups of other sensor packets).
 	 */
 	public enum SENSOR_PACKET {
-		P00_GROUP0(0,true,26),  //  26 bytes  7-26
-		P01_GROUP1(1,true,10),  //  10 bytes  7-16
-		P02_GROUP2(2,true,6),   //   6 bytes 17-20    
-		P03_GROUP3(3,true,10),  //  10 bytes 21-26
-		P04_GROUP4(4,true,14),  //  14 bytes 27-34
-		P05_GROUP5(5,true,12),  //  12 bytes 35-42
-		P06_GROUP6(6,true,52),  //  52 bytes  7-42
-		
+		P00_GROUP0(26),  //  26 bytes  7-26
+		P01_GROUP1(10),  //  10 bytes  7-16
+		P02_GROUP2(6),   //   6 bytes 17-20    
+		P03_GROUP3(10),  //  10 bytes 21-26
+		P04_GROUP4(14),  //  14 bytes 27-34
+		P05_GROUP5(12),  //  12 bytes 35-42
+		P06_GROUP6(52),  //  52 bytes  7-42
+		//
 		P07_BUMPS_AND_WHEEL_DROPS(1),  //4:Wheeldrop Caster, 3:Wheeldrop left, 2:Wheeldrop right, 1:Bump left, 0:Bump Right
 		P08_WALL(1), // 0:Wall seen
 		P09_CLIFF_LEFT(1), // 0:Cliff seen
@@ -180,18 +182,16 @@ public class IRobotCreateV2 {
 		P57_SIDE_BRUSH_MOTOR_CURRENT(2), // 2 byte signed (big endian)
 		P58_STASIS_CASTER(1), //1:stasis disabled, 0:stasis toggle
 		
-		P100_GROUP100(100,true,80),
-		P101_GROUP101(101,true,28),
-		P106_GROUP106(106,true,12),
-		P107_GROUP107(107,true,9);
+		P100_GROUP100(100,80),
+		P101_GROUP101(101,28),
+		P106_GROUP106(106,12),
+		P107_GROUP107(107,9);
 		
 		int id = -1;
-		int numBytes;
-		boolean group;
+		int numBytes;		
 		
-		SENSOR_PACKET(int id, boolean isGroup, int numBytes) {
-			this.id = id;
-			this.group = isGroup;
+		SENSOR_PACKET(int id, int numBytes) {
+			this.id = id;			
 			this.numBytes = numBytes;
 		}
 		
@@ -206,10 +206,6 @@ public class IRobotCreateV2 {
 		public int getID() {
 			if(id<0) return ordinal();
 			return id;
-		}
-		
-		public boolean isGroup() {
-			return group;
 		}
 		
 	}
@@ -795,17 +791,17 @@ public class IRobotCreateV2 {
 	 */
 	public int[] readSensorPacket(SENSOR_PACKET packetID) {
 		sendByte(142);
-		sendByte(packetID.ordinal());
+		sendByte(packetID.getID());
 		return readSensorData(packetID);
 	}
 	
 	// Read and cache a single regular sensor packet or a group of regular sensor packets
 	private int[] readSensorData(SENSOR_PACKET packetID) {		
-		int ord = packetID.ordinal();
-		if(ord<7) { // This is a group of packets
+		int [] ends = SENSOR_GROUPS.get(packetID);
+		if(ends!=null) { // This is a group of packets		
 			int [] ret = new int[packetID.getNumBytes()];
 			int pos = 0;
-			for(int i=SENSOR_GROUP_ENDS[ord][0]; i<=SENSOR_GROUP_ENDS[ord][1];++i) {
+			for(int i=ends[0]; i<=ends[1];++i) {
 				SENSOR_PACKET gp = SENSOR_PACKET.values()[i];
 				int [] pdata = readSensorData(gp);
 				for(int x=0;x<pdata.length;++x) {
@@ -835,7 +831,7 @@ public class IRobotCreateV2 {
 		sendByte(packetIDs.length);
 		int totalSize = 0;
 		for(SENSOR_PACKET id : packetIDs) {
-			sendByte(id.ordinal());
+			sendByte(id.getID());
 			totalSize += id.getNumBytes();
 		}
 		int [] ret = new int[totalSize];
@@ -863,7 +859,7 @@ public class IRobotCreateV2 {
 		sendByte(148);
 		sendByte(packetIDs.length);
 		for(SENSOR_PACKET id : packetIDs) {
-			sendByte(id.ordinal());
+			sendByte(id.getID());
 		}
 	}
 	
@@ -926,7 +922,7 @@ public class IRobotCreateV2 {
 		for(SENSOR_PACKET id : packetIDs) {
 			prot = readByte();
 			chk += prot;chk = chk & 0xFF;			
-			if(prot!=id.ordinal()) return null;			
+			if(prot!=id.getID()) return null;			
 			int [] pdata = readSensorData(id);			
 			for(int x=0;x<pdata.length;++x) {
 				chk = chk + pdata[x];chk = chk & 0xFF;
@@ -943,7 +939,6 @@ public class IRobotCreateV2 {
 		return ret;
 	}	
 	
-	
-	
+	// TODO sensors	
 
 }

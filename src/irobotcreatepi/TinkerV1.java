@@ -4,6 +4,7 @@ import java.io.File;
 
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
+import irobotcreatepi.IRobotCreateV1.SENSOR_PACKET;
 
 public class TinkerV1 {
 
@@ -17,8 +18,8 @@ public class TinkerV1 {
 		} else {
 			//devname = "COM3"; // PC (prop-plug 1)
 			//devname = "COM4"; // PC (prop-plug 2)
-			devname = "COM7"; // PC (adafruit usb-serial)
-			//devname = "COM6"; // PC (irobot usb-serial)
+			//devname = "COM7"; // PC (adafruit usb-serial)
+			devname = "COM6"; // PC (irobot usb-serial)
 		}			
 		
 		CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(devname);
@@ -30,8 +31,8 @@ public class TinkerV1 {
 		System.out.println("USING PORT '"+devname+"'");
 		IRobotCreateV1 robot = new IRobotCreateV1(serialPort.getInputStream(),serialPort.getOutputStream());
 		
-		robot.setMode(IRobotCreateV1.MODE.PASSIVE); // Required at startup
-		Thread.sleep(1000); // Wait for mode change	
+		//robot.setMode(IRobotCreateV1.MODE.PASSIVE); // Required at startup
+		//Thread.sleep(1000); // Wait for mode change	
 		
 		robot.setMode(IRobotCreateV1.MODE.FULL);
 		Thread.sleep(1000);
@@ -137,12 +138,22 @@ public class TinkerV1 {
 			System.out.println(Arrays.toString(dat));
 		}
 		*/
-	
-		
+
 		robot.storeSong(0, 72,8, 76,8, 79,8);
 		Thread.sleep(1000);
 		robot.playSong(0);
-
+		
+		while(true) {
+			robot.readSensorPacket(SENSOR_PACKET.P06_GROUP6);
+			System.out.println("Charging state: "+robot.getChargingState());
+			System.out.println("Battery voltage: "+robot.getVoltage());			
+			System.out.println("Battery current: "+robot.getCurrent());
+			System.out.println("Battery temperature: "+robot.getBatteryTemperature());
+			System.out.println("Battery charge: "+robot.getBatteryCharge());
+			System.out.println("Estimated battery capacity: "+robot.getBatteryCapacity());
+			Thread.sleep(1000);
+		}
+			
 	}
 
 }
