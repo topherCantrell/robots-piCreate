@@ -7,6 +7,22 @@ import gnu.io.SerialPort;
 import irobotcreatepi.IRobotCreateV1.SENSOR_PACKET;
 
 public class TinkerV1 {
+	
+	/*
+	private static void testSerial(SerialPort serialPort) throws IOException {
+		OutputStream os = serialPort.getOutputStream();
+		InputStream is = serialPort.getInputStream();
+		os.write("THIS IS A TEST".getBytes());
+		os.flush();
+		while(true) {
+			int v = is.read();
+			if(v>=0) {
+				System.out.println(""+v+":"+(char)v);
+				os.write((""+v).getBytes());
+			}
+		}
+	}
+	*/
 
 	public static void main(String[] args) throws Exception {
 		
@@ -16,10 +32,7 @@ public class TinkerV1 {
 		if(f.exists()) {
 			devname = "/dev/ttyUSB0"; // Pi
 		} else {
-			//devname = "COM3"; // PC (prop-plug 1)
-			//devname = "COM4"; // PC (prop-plug 2)
-			//devname = "COM7"; // PC (adafruit usb-serial)
-			devname = "COM6"; // PC (irobot usb-serial)
+			devname = "COM12"; // PC
 		}			
 		
 		CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(devname);
@@ -29,10 +42,14 @@ public class TinkerV1 {
 		serialPort.setInputBufferSize(256);		
 		
 		System.out.println("USING PORT '"+devname+"'");
+		
+		
+		//testSerial(serialPort);		
+		
 		IRobotCreateV1 robot = new IRobotCreateV1(serialPort.getInputStream(),serialPort.getOutputStream());
 		
-		//robot.setMode(IRobotCreateV1.MODE.PASSIVE); // Required at startup
-		//Thread.sleep(1000); // Wait for mode change	
+		robot.setMode(IRobotCreateV1.MODE.PASSIVE); // Required at startup
+		Thread.sleep(1000); // Wait for mode change	
 		
 		robot.setMode(IRobotCreateV1.MODE.FULL);
 		Thread.sleep(1000);

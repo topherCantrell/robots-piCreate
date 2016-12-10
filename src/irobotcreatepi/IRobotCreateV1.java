@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -66,7 +67,7 @@ public class IRobotCreateV1 {
 	}
 	
 	// Used in multi-byte math
-	private int[] twoByteSigned(int value) {
+	public static int[] twoByteSigned(int value) {
 		int [] ret = new int[2];
 		if(value<0) value=value+0x10000;
 		value = value & 0xFFFF;
@@ -74,7 +75,7 @@ public class IRobotCreateV1 {
 		ret[1] = value & 0xFF;
 		return ret;
 	}	
-	private int fromTwoByteSigned(int high, int low) {
+	public static  int fromTwoByteSigned(int high, int low) {
 		int ret = (high<<8) | low;
 		if(ret>0x7FFF) {
 			ret = ret | 0xFFFF0000;
@@ -762,6 +763,16 @@ public class IRobotCreateV1 {
 			sendByte(val);
 		}
 	}
+	public void storeScript(List<Integer> script) {
+		if(script.size()>100) {
+			throw new RuntimeException("100 bytes is the max script length.");
+		}
+		sendByte(152);
+		sendByte(script.size());
+		for(int val : script) {
+			sendByte(val);
+		}
+	}
 	
 	/**
 	 * This command loads a previously defined OI script into the
@@ -835,7 +846,7 @@ public class IRobotCreateV1 {
 	 */
 	public void scriptWaitAngle(int angle) {
 		int[] a = twoByteSigned(angle);
-		sendByte(156);
+		sendByte(157);
 		sendByte(a[0]);
 		sendByte(a[1]);
 	}

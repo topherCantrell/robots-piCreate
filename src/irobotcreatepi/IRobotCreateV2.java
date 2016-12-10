@@ -71,7 +71,7 @@ public class IRobotCreateV2 {
 	}	
 	
 	// Used in multi-byte math
-	private int[] twoByteSigned(int value) {
+	public static  int[] twoByteSigned(int value) {
 		int [] ret = new int[2];
 		if(value<0) value=value+0x10000;
 		value = value & 0xFFFF;
