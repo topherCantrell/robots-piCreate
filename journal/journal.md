@@ -1,3 +1,11 @@
+## 1/18/2017 ##
+
+Getting the web based control for the FRC robotics hockey night.
+
+Simple commands: straight, spin, stop
+
+Runs fine from PC. Now to get the PIs booting into the web server
+
 ## 10/9/2016 ##
 
 All the parts are in.

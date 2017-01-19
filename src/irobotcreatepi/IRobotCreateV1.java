@@ -2,7 +2,6 @@ package irobotcreatepi;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -430,7 +429,7 @@ public class IRobotCreateV1 {
 	public void drive(int velocity, int radius) {	
 		int [] v = twoByteSigned(velocity);
 		int [] r = twoByteSigned(radius);
-		System.out.println(Arrays.toString(v)+":"+Arrays.toString(r));
+		//System.out.println(Arrays.toString(v)+":"+Arrays.toString(r));
 		sendByte(137);
 		sendByte(v[0]);
 		sendByte(v[1]);

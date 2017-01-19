@@ -29,7 +29,7 @@ public class IRobotServletV2  extends HttpServlet
 			if(f.exists()) {
 				devname = "/dev/ttyUSB0"; // Pi
 			} else {
-				devname = "COM12"; // PC
+				devname = "COM3"; // PC
 			}			
 			
 			CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(devname);
@@ -45,10 +45,14 @@ public class IRobotServletV2  extends HttpServlet
 			robot.setMode(IRobotCreateV2.MODE.PASSIVE); // Required at startup
 			Thread.sleep(1000); // Wait for mode change	
 			
-			robot.setMode(IRobotCreateV2.MODE.FULL);
+			robot.setMode(IRobotCreateV2.MODE.FULL); 
 			//robot.setMode(IRobotCreateV2.MODE.SAFE);
 			Thread.sleep(1000);
 			
+			robot.storeSong(0, 72,8, 76,8, 79,8, 76,8, 72,16);
+			Thread.sleep(1000);
+			robot.playSong(0);
+									
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -76,24 +80,50 @@ public class IRobotServletV2  extends HttpServlet
 	@Override
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
+		int vel,rad;
+		boolean dir;
+		
+		// STRAIGHT(vel, [time])
+		// SPIN(vel, clkwise, [time])
+		// DRIVE(vel, rad,[time])
+		// STOP
+		
+		// TODO TODO TODO
+		// This is all very temporary. I *MUST* get something
+		// working for the demo in 2 days. So here it is.
 		
 		String command = request.getParameter("command");
 						
 		if(command!=null) {
 			List<String> com = parseCommand(command);
 			switch(com.get(0)) {
+			
+			case "STOP":
+				robot.driveStraight(0);
+				break;
+			
+			case "STRAIGHT":
+				vel = Integer.parseInt(com.get(1));
+				robot.driveStraight(vel);							
+				break;
+			
 			case "DRIVE":
-				int vel = Integer.parseInt(com.get(1));
-				int rad = 32768;
-				if(com.size()>2) {
-					rad = Integer.parseInt(com.get(2));
-				}
-				robot.drive(vel, rad);
-				response.getWriter().println("{}");
-				break;			
+				vel = Integer.parseInt(com.get(1));
+				rad = 32768;
+				rad = Integer.parseInt(com.get(2));				
+				robot.drive(vel, rad);				
+				break;		
+				
+			case "SPIN":
+				vel = Integer.parseInt(com.get(1));
+				dir = Boolean.parseBoolean(com.get(2));
+				robot.driveSpin(vel, dir);				
+				break;	
+				
 			default:
-				response.setStatus(403);				
-			}			
+				response.setStatus(403);	
+				return; // No timeout
+			}	
 			
 		} 
 				

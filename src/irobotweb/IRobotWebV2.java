@@ -8,6 +8,8 @@ import org.eclipse.jetty.servlet.ServletHandler;
 public class IRobotWebV2 {
     
     public static void main(String[] args) throws Exception {
+    	
+    	new IRobotServletV2();
         
         // For static files 
         ResourceHandler staticFilesHandler = new ResourceHandler();
