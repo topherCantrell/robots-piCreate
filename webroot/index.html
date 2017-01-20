@@ -9,15 +9,7 @@
 		<script src="ext/bootstrap-3.3.7.min.js" ></script>
 		
 		<style>
-		    #glassPane {
-			    width: 100%;
-			    height: 100%;
-			    z-index: 10;
-			    position: fixed;
-			    top: 0;
-			    left: 0;
-			    margin: 0;
-			    padding: 0;
+		    .glassPane {		       
 			    background-color: #F0F0F0;
 			    opacity: 0.75;
 		    }
@@ -138,11 +130,12 @@
 			
 			var scriptCommands = [];
 			var scriptCommandsPos = 0;
+			var currentCom;
 			
 			function nextScriptCommand() {
 				if(scriptCommandsPos==scriptCommands.length) {
 					robotAjax("stop",function() {
-						alert("SCRIPT DONE");
+						$("#driveDiv").addClass("glassPane");
 					});
 					return;
 				}
@@ -150,6 +143,10 @@
 				++scriptCommandsPos;
 				
 				var type = cmd.attr("src");
+				currentCom = cmd;
+				var i = type.indexOf(".jpg");
+				var orgSrc = type;
+				cmd.attr("src",type.substring(0,i)+"CUR"+type.substring(i));
 				var time = 0;
 				if(type==="img/forward.jpg") {
 					type = "straight("+POWERstraight+")";
@@ -169,6 +166,7 @@
 				
 				robotAjax(type,function() {
 					setTimeout(function() {
+						cmd.attr("src",orgSrc);
 						nextScriptCommand();
 					},time);
 				});
@@ -177,8 +175,7 @@
 			
 			
 			function runScript() {
-				// TODO disable all but stop
-				// TODO enable stop
+				$("#driveDiv").addClass("glassPane");
 				
 				scriptCommands = $(".programElement");
 				scriptCommandsPos = 0;
@@ -192,18 +189,20 @@
 	
 	<body>
 	
-		<div id="glassPane" style="display:none"></div>
+	<div id="driveDiv">
 	
 		<div style="margin-left:50px" class="disabled">
-			<img src="img/blank.jpg">
-			<img src="img/forward.jpg" id="btForward">
+			<img height="100" src="img/blank.jpg">
+			<img height="100" src="img/forward.jpg" id="btForward">
 			<br>
-			<img src="img/spinCCW.jpg" id="btSpinCCW">
-			<img src="img/stop.jpg"    id="btStop">
-			<img src="img/spinCW.jpg"  id="btSpinCW">
+			<img height="100" src="img/spinCCW.jpg" id="btSpinCCW">
+			<img height="100" src="img/stop.jpg"    id="btStop">
+			<img height="100" src="img/spinCW.jpg"  id="btSpinCW">
 			<br>
-			<img src="img/blank.jpg">
-			<img src="img/back.jpg"    id="btBack">
+			<img height="100" src="img/blank.jpg">
+			<img height="100" src="img/back.jpg"    id="btBack">
+		</div>
+		
 		</div>
 		
 		<div style="margin:50px">
