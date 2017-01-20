@@ -98,6 +98,10 @@ public class IRobotServletV2  extends HttpServlet
 			List<String> com = parseCommand(command);
 			switch(com.get(0)) {
 			
+			case "VERSION":
+				response.getOutputStream().write("1".getBytes());
+				break;
+				
 			case "STOP":
 				if(robot!=null) robot.driveStraight(0);
 				break;
