@@ -54,7 +54,7 @@ public class IRobotServletV2  extends HttpServlet
 			robot.playSong(0);
 									
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			//throw new RuntimeException(e);
 		}
 	}	
 	
@@ -99,25 +99,25 @@ public class IRobotServletV2  extends HttpServlet
 			switch(com.get(0)) {
 			
 			case "STOP":
-				robot.driveStraight(0);
+				if(robot!=null) robot.driveStraight(0);
 				break;
 			
 			case "STRAIGHT":
 				vel = Integer.parseInt(com.get(1));
-				robot.driveStraight(vel);							
+				if(robot!=null) robot.driveStraight(vel);							
 				break;
 			
 			case "DRIVE":
 				vel = Integer.parseInt(com.get(1));
 				rad = 32768;
 				rad = Integer.parseInt(com.get(2));				
-				robot.drive(vel, rad);				
+				if(robot!=null) robot.drive(vel, rad);				
 				break;		
 				
 			case "SPIN":
 				vel = Integer.parseInt(com.get(1));
 				dir = Boolean.parseBoolean(com.get(2));
-				robot.driveSpin(vel, dir);				
+				if(robot!=null) robot.driveSpin(vel, dir);				
 				break;	
 				
 			default:
