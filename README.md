@@ -23,7 +23,7 @@ This is the landing page for Create:
 Here is a project page for Create and the Raspberry Pi:
 [http://www.irobot.com/~/media/MainSite/PDFs/About/STEM/Create/RaspberryPi_Tutorial.pdf](http://www.irobot.com/~/media/MainSite/PDFs/About/STEM/Create/RaspberryPi_Tutorial.pdf)
 
-![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/iRobotDIN.jpg)
+![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/art/iRobotDIN.jpg)
 
 USB to TTL Serial Cable (adafruit)
 
@@ -39,19 +39,19 @@ On the iCreate1 data goes TO the robot on pin 1 of the cargo bay connector
 5V converter
 [https://www.adafruit.com/products/1385](https://www.adafruit.com/products/1385)
 
-![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/buck.jpg)
+![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/art/buck.jpg)
 
-![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/roombaDIN.jpg)
+![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/art/roombaDIN.jpg)
 
-![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/usbserial.jpg)
+![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/art/usbserial.jpg)
 
-![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/picreate1.jpg)
+![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/art/picreate1.jpg)
 
-![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/picreate2.jpg)
+![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/art/picreate2.jpg)
 
-![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/picreate1b.jpg)
+![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/art/picreate1b.jpg)
 
-![](https://github.com/topherCantrell/iRobotCreatePI/blob/master/art/picreate2b.jpg)
+![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/art/picreate2b.jpg)
 
 https://developer.mbed.org/cookbook/iRobot-Create-Robot
 
