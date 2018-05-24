@@ -10,7 +10,8 @@ provided serial cable (and through the cargo-bay connector in the first series o
 
 There are two versions of the serial interface. The older models use this protocol:
 
-[http://www.irobot.com/filelibrary/pdfs/hrd/create/Create%20Open%20Interface_v2.pdf](http://www.irobot.com/filelibrary/pdfs/hrd/create/Create%20Open%20Interface_v2.pdf)
+[http://www.irobot.com/filelibrary/pdfs/hrd/create/Create%20Open%20Interface_v2.pdf]
+(http://www.irobot.com/filelibrary/pdfs/hrd/create/Create%20Open%20Interface_v2.pdf)
 
 Newer hardware, including the iRobot Create2 use this protocol:
 
@@ -21,7 +22,8 @@ This is the landing page for Create:
 [http://www.irobot.com/About-iRobot/STEM/Create-2.aspx](http://www.irobot.com/About-iRobot/STEM/Create-2.aspx)
 
 Here is a project page for Create and the Raspberry Pi:
-[http://www.irobot.com/~/media/MainSite/PDFs/About/STEM/Create/RaspberryPi_Tutorial.pdf](http://www.irobot.com/~/media/MainSite/PDFs/About/STEM/Create/RaspberryPi_Tutorial.pdf)
+[http://www.irobot.com/~/media/MainSite/PDFs/About/STEM/Create/RaspberryPi_Tutorial.pdf]
+(http://www.irobot.com/~/media/MainSite/PDFs/About/STEM/Create/RaspberryPi_Tutorial.pdf)
 
 ![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/art/iRobotDIN.jpg)
 
@@ -35,6 +37,9 @@ White:RX into USB port,
 Green:TX out of USB port
 
 On the iCreate1 data goes TO the robot on pin 1 of the cargo bay connector
+
+The cable that came with the iCreate did not have power connected through. The wires were not connected to the plug.
+But the cable from adafruit does supply power correctly.
 
 5V converter
 [https://www.adafruit.com/products/1385](https://www.adafruit.com/products/1385)
