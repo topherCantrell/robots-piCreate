@@ -1,0 +1,11 @@
+
+#glassPane {	
+    position: absolute;	       
+	background-color: #F0F0F0;
+	opacity: 0.65;
+	z-index: 10;
+	width: 320px;
+	height: 310px;
+	top: 45px;
+	left: 45px;
+}

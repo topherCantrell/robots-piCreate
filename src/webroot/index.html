@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	
+		<title>PiCreate</title>
+		
+		<link rel="stylesheet" href="ext/bootstrap-3.3.7.min.css" >
+		<link rel="stylesheet" href="piCreate.css" >		
+			
+	</head>
+	
+	<body>
+	
+		<div id="glassPane" style="display:none"></div>
+		
+		<div style="margin:50px;width:310px">
+			<img height="100" src="img/blank.jpg">
+			<img height="100" src="img/forward.jpg" id="btForward">
+			<br>
+			<img height="100" src="img/spinCCW.jpg" id="btSpinCCW">
+			<img height="100" src="img/stop.jpg"    id="btStop">
+			<img height="100" src="img/spinCW.jpg"  id="btSpinCW">
+			<br>
+			<img height="100" src="img/blank.jpg">
+			<img height="100" src="img/back.jpg"    id="btBack">
+		</div>
+		
+		<div style="margin:50px">
+			<button id="btDrive" class="btn btn-primary btn-lg">Drive</button>	
+			<button id="btProgram" class="btn btn-lg">Program</button>		
+		</div>		
+		
+		<div id="program" style="margin-left:50px;display:none">		
+		    <button id="btClear" class="btn btn-lg">Clear</button>
+			<button id="btRunProg" class="btn btn-lg">Run</button>
+			<button id="btStopProg" class="btn btn-lg" disabled>Stop</button>
+			<div id="programScript" style="margin:8px">			
+		    	<img class="cursor" height="75" src="img/cursor.jpg" onclick="scriptClick(event)">
+		    </div>
+		</div>
+		
+		<script src="ext/jquery-3.1.1.min.js"></script>
+		<script src="ext/bootstrap-3.3.7.min.js" ></script>
+		<script src="piCreate.js"></script>
+	
+	</body>
+
+</html>

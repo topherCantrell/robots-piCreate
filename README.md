@@ -15,21 +15,20 @@ There are two versions of the serial interface. The older models use this protoc
 
 Newer hardware, including the iRobot Create2 use this protocol:
 
-[http://www.irobotweb.com/~/media/MainSite/PDFs/About/STEM/Create/iRobot_Roomba_600_Open_Interface_Spec.pdf](http://www.irobotweb.com/~/media/MainSite/PDFs/About/STEM/Create/iRobot_Roomba_600_Open_Interface_Spec.pdf)
+http://www.irobotweb.com/~/media/MainSite/PDFs/About/STEM/Create/iRobot_Roomba_600_Open_Interface_Spec.pdf
 
 This is the landing page for Create:
 
-[http://www.irobot.com/About-iRobot/STEM/Create-2.aspx](http://www.irobot.com/About-iRobot/STEM/Create-2.aspx)
+http://www.irobot.com/About-iRobot/STEM/Create-2.aspx
 
 Here is a project page for Create and the Raspberry Pi:
-[http://www.irobot.com/~/media/MainSite/PDFs/About/STEM/Create/RaspberryPi_Tutorial.pdf]
-(http://www.irobot.com/~/media/MainSite/PDFs/About/STEM/Create/RaspberryPi_Tutorial.pdf)
+http://www.irobot.com/~/media/MainSite/PDFs/About/STEM/Create/RaspberryPi_Tutorial.pdf
 
 ![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/art/iRobotDIN.jpg)
 
 USB to TTL Serial Cable (adafruit)
 
-[https://www.adafruit.com/products/954](https://www.adafruit.com/products/954)
+https://www.adafruit.com/products/954
 
 Red: power, 
 Black: ground, 
@@ -42,7 +41,7 @@ The cable that came with the iCreate did not have power connected through. The w
 But the cable from adafruit does supply power correctly.
 
 5V converter
-[https://www.adafruit.com/products/1385](https://www.adafruit.com/products/1385)
+https://www.adafruit.com/products/1385
 
 ![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/art/buck.jpg)
 
