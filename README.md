@@ -10,8 +10,7 @@ provided serial cable (and through the cargo-bay connector in the first series o
 
 There are two versions of the serial interface. The older models use this protocol:
 
-[http://www.irobot.com/filelibrary/pdfs/hrd/create/Create%20Open%20Interface_v2.pdf]
-(http://www.irobot.com/filelibrary/pdfs/hrd/create/Create%20Open%20Interface_v2.pdf)
+http://www.irobot.com/filelibrary/pdfs/hrd/create/Create%20Open%20Interface_v2.pdf
 
 Newer hardware, including the iRobot Create2 use this protocol:
 
