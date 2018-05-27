@@ -1,3 +1,5 @@
+# TODO document how sensor groups work
+
 def _signed_word_from_bytes(value):
         value = (value[0]<<8) | value[1]
         if value>32767:
