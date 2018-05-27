@@ -5,24 +5,16 @@ class Create(object):
 
     def __init__(self, port_name):
         self.roomba = serial.Serial(port_name,115200)
-        # To connect to the robot:
-        # You must set the PASSIVE mode to activate the serial interface.
-        #
-        # When you are done with the robot:
-        # You set the PASSIVE mode
-        # Then the STOP command
+        self.set_mode_passive()
+        self.set_song(0,[[0x48,0x10],[0x4C,0x10],[0x4F,0x10]])
+        self.play_song(0)
+        time.sleep(3)
         
     def _signed_word_to_bytes(self,value):
         # The roomba uses 16 bit signed words, MSB first
         if value<0:
             value = value + 65536
         return bytes([(value>>8)&255,value&255])
-    
-    def _signed_word_from_bytes(self,value):
-        value = (value[0]<<8) | value[1]
-        if value>32767:
-            value = value - 65536
-        return value
             
     # Mode
         
@@ -98,13 +90,53 @@ class Create(object):
     # Music
     
     def set_song(self,number,notes):
+        # number: 0,1,2, or 3
+        # notes are pairs of midiNumber/duration
+        #   midiNumber: 31 through 127 (outside this range is a silence)
+        #   duration: 1/64ths of a second
         cmd = b'\x8C' + bytes([number,len(notes)])
         for note in notes:
             cmd = cmd + bytes([note[0],note[1]])
         self.roomba.write(cmd)          
     
     def play_song(self,number):
+        # number: 0,1,2, or 3
         cmd = b'\x8D' + bytes([number])
         self.roomba.write(cmd)    
     
-    # Sensors TODO
+    # Sensors
+    
+    def get_sensor_packet(self, sensor_object):
+        cmd = b'\x8E' + bytes([sensor_object.ID])
+        self.roomba.write(cmd)
+        data = self.roomba.read(sensor_object.SIZE)
+        sensor_object.decode(data)        
+    
+    def get_sensor_multi_packets(self, sensor_objects):
+        # x95
+        pass
+        
+    # TODO sensor stream start, pause, stop
+    
+if __name__ == '__main__':
+    
+    import sensor_packets
+    
+    roomba = Create('COM4')
+    
+    roomba.set_mode_passive()
+    
+    sens = sensor_packets.BatteryCharge()
+    roomba.get_sensor_packet(sens)
+    print(sens)
+    
+    sens = sensor_packets.BatteryCapacity()
+    roomba.get_sensor_packet(sens)
+    print(sens)
+        
+    time.sleep(2)
+    
+    roomba.set_mode_passive()
+    time.sleep(1)
+    roomba.set_mode_stop()
+        

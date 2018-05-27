@@ -37,12 +37,11 @@ roomba.write(b'\x80')
 print('Sleeping 1 second (giving roomba time to change mode)')
 time.sleep(1)
 
-
-
-
-
-
-
+"""
+roomba.write(b'\x07')
+ver = roomba.read(256)
+print(ver)
+"""
 
 print("Sending STOP command (173). You should hear a low-pitch beep.")
 roomba.write(b'\xAD')
