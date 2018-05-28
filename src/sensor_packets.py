@@ -1,13 +1,13 @@
 # TODO document how sensor groups work
 
-def _signed_word_from_bytes(value):
-        value = (value[0]<<8) | value[1]
+def _signed_word_from_bytes(value,ofs):
+        value = (value[ofs]<<8) | value[ofs+1]
         if value>32767:
             value = value - 65536
         return value
     
-def _unsigned_word_from_bytes(value):
-        value = (value[0]<<8) | value[1]        
+def _unsigned_word_from_bytes(value,ofs):
+        value = (value[ofs]<<8) | value[ofs+1]        
         return value
     
 class BumpsAndWheelDrops:    
@@ -20,16 +20,26 @@ class BumpsAndWheelDrops:
         self.drop_right = None
         self.drop_left  = None
     
-    def decode(self,packet):
+    def decode(self,packet,ofs):
         # print(packet)
-        self.bump_right = ((packet[0]&1)>0)        
-        self.bump_left  = ((packet[0]&2)>0) 
-        self.drop_right = ((packet[0]&4)>0) 
-        self.drop_left  = ((packet[0]&8)>0)         
+        self.bump_right = ((packet[ofs]&1)>0)        
+        self.bump_left  = ((packet[ofs]&2)>0) 
+        self.drop_right = ((packet[ofs]&4)>0) 
+        self.drop_left  = ((packet[ofs]&8)>0)         
             
     def __repr__(self):
         return ('BumpsAndDrops bump_left:'+str(self.bump_left)+' bump_right:'+str(self.bump_right)+
                 ' drop_left:'+str(self.drop_left)+' drop_right:'+str(self.drop_right))
+        
+class Wall:
+    ID = 8
+    SIZE = 1
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
         
 class CliffLeft:
     ID = 9
@@ -38,9 +48,9 @@ class CliffLeft:
     def __init__(self):
         self.is_cliff = None
         
-    def decode(self,packet):
+    def decode(self,packet,ofs):
         #print(packet)
-        self.is_cliff = (packet[0]>0)
+        self.is_cliff = (packet[ofs]>0)
     
     def __repr__(self):
         return ('CliffLeft is_cliff:'+str(self.is_cliff))
@@ -52,9 +62,9 @@ class CliffFrontLeft:
     def __init__(self):
         self.is_cliff = None
         
-    def decode(self,packet):
+    def decode(self,packet,ofs):
         #print(packet)
-        self.is_cliff = (packet[0]>0)
+        self.is_cliff = (packet[ofs]>0)
     
     def __repr__(self):
         return ('CliffFrontLeft is_cliff:'+str(self.is_cliff))
@@ -66,9 +76,9 @@ class CliffFrontRight:
     def __init__(self):
         self.is_cliff = None
         
-    def decode(self,packet):
+    def decode(self,packet,ofs):
         #print(packet)
-        self.is_cliff = (packet[0]>0)
+        self.is_cliff = (packet[ofs]>0)
     
     def __repr__(self):
         return ('CliffFrontRight is_cliff:'+str(self.is_cliff))
@@ -80,49 +90,52 @@ class CliffRight:
     def __init__(self):
         self.is_cliff = None
         
-    def decode(self,packet):
+    def decode(self,packet,ofs):
         #print(packet)
-        self.is_cliff = (packet[0]>0)
+        self.is_cliff = (packet[ofs]>0)
     
     def __repr__(self):
         return ('CliffRight is_cliff:'+str(self.is_cliff))
-    
-"""
+
 class VirtualWall:
     ID = 13
-    SIZE = 1
-    #TODO
+    SIZE = 1   
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
 
 class WheelOvercurrents:
     ID = 14
     SIZE = 1
-    #TODO
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
     
 class DirtDetect:
     ID = 15
     SIZE = 1
-    #TODO
-    
-class UnusedByte16:
-    ID = 16
-    SIZE = 1
-    #TODO
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
     
 class InfraredCharacterOmni:
     ID = 17
     SIZE = 1
-    #TODO
-    
-class InfraredCharacterLeft:
-    ID = 52
-    SIZE = 1
-    #TODO
-
-class InfraredCharacterRight:
-    ID = 53
-    SIZE = 1
-    #TODO    
-"""
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
     
 class Buttons:
     ID = 18
@@ -138,16 +151,16 @@ class Buttons:
         self.is_spot     = None
         self.is_clean    = None
         
-    def decode(self,packet):
+    def decode(self,packet,ofs):
         print(packet)
-        self.is_clock    = ((packet[0]&128)>0)
-        self.is_schedule = ((packet[0]&64)>0)
-        self.is_day      = ((packet[0]&32)>0)
-        self.is_hour     = ((packet[0]&16)>0)
-        self.is_minute   = ((packet[0]&8)>0)
-        self.is_dock     = ((packet[0]&4)>0)
-        self.is_spot     = ((packet[0]&2)>0)
-        self.is_clean    = ((packet[0]&1)>0)
+        self.is_clock    = ((packet[ofs]&128)>0)
+        self.is_schedule = ((packet[ofs]&64)>0)
+        self.is_day      = ((packet[ofs]&32)>0)
+        self.is_hour     = ((packet[ofs]&16)>0)
+        self.is_minute   = ((packet[ofs]&8)>0)
+        self.is_dock     = ((packet[ofs]&4)>0)
+        self.is_spot     = ((packet[ofs]&2)>0)
+        self.is_clean    = ((packet[ofs]&1)>0)
     
     def __repr__(self):
         return ('Buttons is_clock:'+str(self.is_clock)+' is_schedule:'+str(self.is_schedule)+' is_day:'+str(self.is_day)+
@@ -161,8 +174,8 @@ class Distance:
     def __init__(self):
         self.since_last_mm = None
         
-    def decode(self,packet):
-        self.since_last_mm = _signed_word_from_bytes(packet)
+    def decode(self,packet,ofs):
+        self.since_last_mm = _signed_word_from_bytes(packet,ofs)
         
     def __repr__(self):
         return 'Distance since_last_mm:'+str(self.since_last_mm)
@@ -174,8 +187,8 @@ class Angle:
     def __init__(self):
         self.since_last_deg = None
         
-    def decode(self,packet):
-        self.since_last_deg = _signed_word_from_bytes(packet)
+    def decode(self,packet,ofs):
+        self.since_last_deg = _signed_word_from_bytes(packet,ofs)
         
     def __repr__(self):
         return 'Angle since_last_deg:'+str(self.since_last_deg)
@@ -187,21 +200,21 @@ class ChargingState:
     def __init__(self):
         self.state = None
         
-    def decode(self,packet):
-        if packet[0]==0:
+    def decode(self,packet,ofs):
+        if packet[ofs]==0:
             self.state = (0,'Not charging')
-        elif packet[0]==1:
+        elif packet[ofs]==1:
             self.state = (1,'Reconditioning Charging')
-        elif packet[0]==2:
+        elif packet[ofs]==2:
             self.state = (2,'Full Charging')
-        elif packet[0]==3:
+        elif packet[ofs]==3:
             self.state = (3,'Trickle Charging')
-        elif packet[0]==4:
+        elif packet[ofs]==4:
             self.state = (4,'Waiting')
-        elif packet[0]==5:
+        elif packet[ofs]==5:
             self.state = (5,'Charging Fault Condition')
         else:
-            self.state = (packet[0],'UNKNOWN VALUE')
+            self.state = (packet[ofs],'UNKNOWN VALUE')
             
     def __repr__(self):
         return 'ChargingState state:'+str(self.state)
@@ -213,8 +226,8 @@ class BatteryVoltage:
     def __init__(self):
         self.voltage = None
         
-    def decode(self,packet):
-        self.voltage = _unsigned_word_from_bytes(packet)/1000.0
+    def decode(self,packet,ofs):
+        self.voltage = _unsigned_word_from_bytes(packet,ofs)/1000.0
         
     def __repr__(self):
         return 'BatteryVoltage voltage:'+str(self.voltage)
@@ -226,8 +239,8 @@ class BatteryCurrent:
     def __init__(self):
         self.current = None
         
-    def decode(self,packet):
-        self.current = _signed_word_from_bytes(packet)/1000.0
+    def decode(self,packet,ofs):
+        self.current = _signed_word_from_bytes(packet,ofs)/1000.0
         
     def __repr__(self):
         return 'BatteryCurrent current:'+str(self.current)
@@ -239,8 +252,8 @@ class BatteryTemperature:
     def __init__(self):
         self.temperature_c = None
         
-    def decode(self,packet):
-        self.temperature_c = packet[0]
+    def decode(self,packet,ofs):
+        self.temperature_c = packet[ofs]
         if(self.temperature_c>127):
             self.temperature_c = self.temperature_c - 256
         
@@ -254,8 +267,8 @@ class BatteryCharge:
     def __init__(self):
         self.charge_mah = None
         
-    def decode(self,packet):
-        self.charge_mah = _unsigned_word_from_bytes(packet)
+    def decode(self,packet,ofs):
+        self.charge_mah = _unsigned_word_from_bytes(packet,ofs)
         
     def __repr__(self):
         return 'BatteryCharge charge_mah:'+str(self.charge_mah)
@@ -267,24 +280,311 @@ class BatteryCapacity:
     def __init__(self):
         self.capacity_mah = None
         
-    def decode(self,packet):
-        self.capacity_mah = _unsigned_word_from_bytes(packet)
+    def decode(self,packet,ofs):
+        self.capacity_mah = _unsigned_word_from_bytes(packet,ofs)
         
     def __repr__(self):
-        return 'BatteryCapacity capacity_mah:'+str(self.capacity_mah)
+        return 'BatteryCapacity capacity_mah:'+str(self.capacity_mah)    
     
-class Group_BatteryInfo:
-    ID = 3
-    SIZE = 10
-    
+class WallSignal:
+    ID = 27
+    SIZE = 2
     def __init__(self):
-        self.group = {
-            'chargingState'      : ChargingState(),      # 1
-            'batteryVoltage'     : BatteryVoltage(),     # 2
-            'batteryCurrent'     : BatteryCurrent(),     # 2
-            'batteryTemperature' : BatteryTemperature(), # 1
-            'batteryCharge'      : BatteryCharge(),      # 2
-            'batteryCapacity'    : BatteryCapacity()     # 2
-        }
-           
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+
+class CliffLeftSignal:
+    ID = 28
+    SIZE = 2
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
     
+class CliffFrontLeftSignal:
+    ID = 29
+    SIZE = 2
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class CliffFrontRightSignal:
+    ID = 30
+    SIZE = 2
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class CliffRightSignal:
+    ID = 31
+    SIZE = 2
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class ChargingSourcesAvailable:
+    ID = 34
+    SIZE = 1
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class OIMode:
+    ID = 35
+    SIZE = 1
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+
+class SongNumber:
+    ID = 36
+    SIZE = 1
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+        
+class SongPlaying:
+    ID = 37
+    SIZE = 1
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class NumberStreamPackets:
+    ID = 38
+    SIZE = 1
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class RequestedVelocity:
+    ID = 39
+    SIZE = 2
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+
+class RequestedRadius:
+    ID = 40
+    SIZE = 2
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+
+class RequestedRightVelocity:
+    ID = 41
+    SIZE = 2
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class RequestedLeftVelocity:
+    ID = 42
+    SIZE = 2
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class LeftEncoderCounts:
+    ID = 43
+    SIZE = 2
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class RightEncoderCounts:
+    ID = 44
+    SIZE = 2
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class LightBumper:
+    ID = 45
+    SIZE = 1
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class LightBumpLeftSignal:
+    ID = 46
+    SIZE = 2
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class LightBumpFrontLeftSignal:
+    ID = 47
+    SIZE = 2
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class LightBumpCenterLeftSignal:
+    ID = 48
+    SIZE = 2
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class LightBumpCenterRightSignal:
+    ID = 49
+    SIZE = 2
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class LightBumpFrontRightSignal:
+    ID = 50
+    SIZE = 2
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class LightBumpRightSignal:
+    ID = 51
+    SIZE = 2
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class InfraredCharacterLeft:
+    ID = 52
+    SIZE = 1
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+
+class InfraredCharacterRight:
+    ID = 53
+    SIZE = 1
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class LeftMotorCurrent:
+    ID = 54
+    SIZE = 2
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class RightMotorCurrent:
+    ID = 55
+    SIZE = 2
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class MainBrushMotorCurrent:
+    ID = 56
+    SIZE = 2
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class SideBrushMotorCurrent:
+    ID = 57
+    SIZE = 2
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+    
+class Stasis:
+    ID = 58
+    SIZE = 1
+    def __init__(self):
+        self.raw = None
+    def decode(self,packet,ofs):
+        self.raw = packet
+    def __repr__(self):
+        return 'TODO raw:'+str(self.raw)
+
+#
+

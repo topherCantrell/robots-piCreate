@@ -5,10 +5,7 @@ class Create(object):
 
     def __init__(self, port_name):
         self.roomba = serial.Serial(port_name,115200)
-        self.set_mode_passive()
-        self.set_song(0,[[0x48,0x10],[0x4C,0x10],[0x4F,0x10]])
-        self.play_song(0)
-        time.sleep(3)
+        self.set_mode_passive()        
         
     def _signed_word_to_bytes(self,value):
         # The roomba uses 16 bit signed words, MSB first
@@ -110,30 +107,43 @@ class Create(object):
         cmd = b'\x8E' + bytes([sensor_object.ID])
         self.roomba.write(cmd)
         data = self.roomba.read(sensor_object.SIZE)
-        sensor_object.decode(data)        
+        sensor_object.decode(data,0)        
     
     def get_sensor_multi_packets(self, sensor_objects):
         # x95
         pass
         
-    # TODO sensor stream start, pause, stop
+    # TODO Asynchronous sensors: stream start, pause, stop
     
 if __name__ == '__main__':
     
     import sensor_packets
+    #import sensor_groups
     
     roomba = Create('COM4')
     
-    roomba.set_mode_passive()
-    
-    sens = sensor_packets.BatteryCharge()
-    roomba.get_sensor_packet(sens)
-    print(sens)
-    
-    sens = sensor_packets.BatteryCapacity()
-    roomba.get_sensor_packet(sens)
-    print(sens)
+    roomba.set_mode_safe()
         
+    sens = sensor_packets.Angle()
+    roomba.get_sensor_packet(sens)
+    print(sens)
+    
+    roomba.set_drive_spin_ccw(100)
+    time.sleep(2)
+    roomba.set_drive_stop()
+    
+    sens = sensor_packets.Angle()
+    roomba.get_sensor_packet(sens)
+    print(sens)
+    
+    roomba.set_drive_spin_cw(100)
+    time.sleep(2)
+    roomba.set_drive_stop()
+    
+    sens = sensor_packets.Angle()
+    roomba.get_sensor_packet(sens)
+    print(sens)    
+            
     time.sleep(2)
     
     roomba.set_mode_passive()
