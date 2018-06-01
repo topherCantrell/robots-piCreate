@@ -120,7 +120,7 @@ if __name__ == '__main__':
     import sensor_packets
     #import sensor_groups
     
-    roomba = Create('COM4')
+    roomba = Create('/dev/ttyUSB0')
     
     roomba.set_mode_safe()
         
@@ -136,7 +136,7 @@ if __name__ == '__main__':
     roomba.get_sensor_packet(sens)
     print(sens)
     
-    roomba.set_drive_spin_cw(100)
+    roomba.set_drive_spin_cw(150)
     time.sleep(2)
     roomba.set_drive_stop()
     

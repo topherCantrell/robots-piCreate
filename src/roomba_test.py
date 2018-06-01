@@ -2,7 +2,8 @@ import serial
 import time
 
 # Roomba defaults to 115200 baud
-roomba = serial.Serial('COM4',115200)
+#roomba = serial.Serial('COM4',115200)
+roomba = serial.Serial('/dev/ttyUSB0',115200)
 
 print("Sending OI START command (128). You should hear a high-pitch beep.")
 roomba.write(b'\x80')

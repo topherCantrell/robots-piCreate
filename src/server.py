@@ -17,8 +17,8 @@ import tornado.web
 import os
 import i_robot_create
 
-roomba = i_robot_create.Create('COM4')
-#roomba = i_robot_create('/dev/serial0')
+#roomba = i_robot_create.Create('COM4')
+roomba = i_robot_create('/dev/ttyUSB0')
 
 # Switch to control mode
 roomba.set_mode_full()
