@@ -14,10 +14,10 @@ class BumpsAndWheelDrops:
     ID = 7
     SIZE = 1    
     def __init__(self):
-        self.bump_right = None
-        self.bump_left  = None
-        self.drop_right = None
-        self.drop_left  = None
+        self.bump_right = None # bumper pushed in on right side
+        self.bump_left  = None # bumper pushed in on left side
+        self.drop_right = None # right wheel dropped
+        self.drop_left  = None # left wheel dropped
     
     def decode(self,packet,ofs):
         # print(packet)
@@ -34,7 +34,7 @@ class Wall:
     ID = 8
     SIZE = 1
     def __init__(self):
-        self.is_wall = None
+        self.is_wall = None # right side of bumper
     def decode(self,packet,ofs):
         self.is_wall = (packet[ofs]>0)
     def __repr__(self):
@@ -45,7 +45,7 @@ class CliffLeft:
     SIZE = 1
     
     def __init__(self):
-        self.is_cliff = None
+        self.is_cliff = None # TODO where?
         
     def decode(self,packet,ofs):
         #print(packet)
@@ -59,7 +59,7 @@ class CliffFrontLeft:
     SIZE = 1
     
     def __init__(self):
-        self.is_cliff = None
+        self.is_cliff = None # TODO where?
         
     def decode(self,packet,ofs):
         #print(packet)
@@ -73,7 +73,7 @@ class CliffFrontRight:
     SIZE = 1
     
     def __init__(self):
-        self.is_cliff = None
+        self.is_cliff = None # TODO where?
         
     def decode(self,packet,ofs):
         #print(packet)
@@ -87,7 +87,7 @@ class CliffRight:
     SIZE = 1
     
     def __init__(self):
-        self.is_cliff = None
+        self.is_cliff = None # TODO where?
         
     def decode(self,packet,ofs):
         #print(packet)

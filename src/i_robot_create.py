@@ -120,13 +120,16 @@ if __name__ == '__main__':
     #import sensor_packets
     import sensor_groups
     
-    roomba = Create('/dev/ttyUSB0')
+    #roomba = Create('/dev/ttyUSB0')
+    roomba = Create('COM4')
     
-    roomba.set_mode_safe()    
-      
-    sens = sensor_groups.Group_107()
-    roomba.get_sensor_packet(sens)
-    print(sens)    
+    roomba.set_mode_full()    
+    
+    for x in range(8):      
+        sens = sensor_groups.CliffRight()
+        roomba.get_sensor_packet(sens)
+        print(sens)   
+        time.sleep(1) 
     
     '''  
     roomba.set_drive_spin_ccw(100)
