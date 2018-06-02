@@ -158,7 +158,7 @@ class Buttons:
         self.is_clean    = None
         
     def decode(self,packet,ofs):
-        print(packet)
+        #print(packet)
         self.is_clock    = ((packet[ofs]&128)>0)
         self.is_schedule = ((packet[ofs]&64)>0)
         self.is_day      = ((packet[ofs]&32)>0)
@@ -446,91 +446,103 @@ class LeftEncoderCounts:
     ID = 43
     SIZE = 2
     def __init__(self):
-        self.raw = None
+        self.count = None
     def decode(self,packet,ofs):
-        self.raw = packet
+        self.count = _signed_word_from_bytes(packet,ofs)
     def __repr__(self):
-        return 'TODO raw:'+str(self.raw)
+        return 'LeftEncoderCounts count:'+str(self.count)
     
 class RightEncoderCounts:
     ID = 44
     SIZE = 2
     def __init__(self):
-        self.raw = None
+        self.count = None
     def decode(self,packet,ofs):
-        self.raw = packet
+        self.count = _signed_word_from_bytes(packet,ofs)
     def __repr__(self):
-        return 'TODO raw:'+str(self.raw)
+        return 'RightEncoderCounts count:'+str(self.count)
     
 class LightBumper:
     ID = 45
     SIZE = 1
     def __init__(self):
-        self.raw = None
+        self.is_right = None
+        self.is_front_right = None
+        self.is_center_right = None
+        self.is_center_left = None
+        self.is_front_left = None
+        self.is_left = None
     def decode(self,packet,ofs):
-        self.raw = packet
+        self.is_right        = ((packet[ofs]&32)>0)
+        self.is_front_right  = ((packet[ofs]&16)>0)
+        self.is_center_right = ((packet[ofs]&8)>0)
+        self.is_center_left  = ((packet[ofs]&4)>0)
+        self.is_front_left   = ((packet[ofs]&2)>0)
+        self.is_left         = ((packet[ofs]&1)>0)
     def __repr__(self):
-        return 'TODO raw:'+str(self.raw)
+        return ('LightBumper is_right:'+str(self.is_right)+' is_front_right:'+str(self.is_front_right)+
+                ' is_center_right:'+str(self.is_center_right)+' is_center_left:'+str(self.is_center_left)+
+                ' is_front_left:'+str(self.is_front_left)+' is_left:'+str(self.is_left) )
     
 class LightBumpLeftSignal:
     ID = 46
     SIZE = 2
     def __init__(self):
-        self.raw = None
+        self.signal = None
     def decode(self,packet,ofs):
-        self.raw = packet
+        self.signal = _unsigned_word_from_bytes(packet,ofs)
     def __repr__(self):
-        return 'TODO raw:'+str(self.raw)
+        return 'LightBumpLeftSignal signal:'+str(self.signal)
     
 class LightBumpFrontLeftSignal:
     ID = 47
     SIZE = 2
     def __init__(self):
-        self.raw = None
+        self.signal = None
     def decode(self,packet,ofs):
-        self.raw = packet
+        self.signal = _unsigned_word_from_bytes(packet,ofs)
     def __repr__(self):
-        return 'TODO raw:'+str(self.raw)
+        return 'LightBumpFrontLeftSignal signal:'+str(self.signal)
     
 class LightBumpCenterLeftSignal:
     ID = 48
     SIZE = 2
     def __init__(self):
-        self.raw = None
+        self.signal = None
     def decode(self,packet,ofs):
-        self.raw = packet
+        self.signal = _unsigned_word_from_bytes(packet,ofs)
     def __repr__(self):
-        return 'TODO raw:'+str(self.raw)
+        return 'LightBumpCenterLeftSignal signal:'+str(self.signal)
     
 class LightBumpCenterRightSignal:
     ID = 49
     SIZE = 2
     def __init__(self):
-        self.raw = None
+        self.signal = None
     def decode(self,packet,ofs):
-        self.raw = packet
+        self.signal = _unsigned_word_from_bytes(packet,ofs)
     def __repr__(self):
-        return 'TODO raw:'+str(self.raw)
+        return 'LightBumpCenterRightSignal signal:'+str(self.signal)
     
 class LightBumpFrontRightSignal:
     ID = 50
     SIZE = 2
     def __init__(self):
-        self.raw = None
+        self.signal = None
     def decode(self,packet,ofs):
-        self.raw = packet
+        self.signal = _unsigned_word_from_bytes(packet,ofs)
     def __repr__(self):
-        return 'TODO raw:'+str(self.raw)
+        return 'LightBumpFrontRightSignal signal:'+str(self.signal)
     
 class LightBumpRightSignal:
     ID = 51
     SIZE = 2
     def __init__(self):
-        self.raw = None
+        self.signal = None
     def decode(self,packet,ofs):
-        self.raw = packet
+        self.signal = _unsigned_word_from_bytes(packet,ofs)
     def __repr__(self):
-        return 'TODO raw:'+str(self.raw)
+        return 'LightBumpRightSignal signal:'+str(self.signal)
     
 class InfraredCharacterLeft:
     ID = 52
@@ -556,51 +568,50 @@ class LeftMotorCurrent:
     ID = 54
     SIZE = 2
     def __init__(self):
-        self.raw = None
+        self.current_ma = None
     def decode(self,packet,ofs):
-        self.raw = packet
+        self.current_ma = _unsigned_word_from_bytes(packet,ofs)
     def __repr__(self):
-        return 'TODO raw:'+str(self.raw)
+        return 'LeftMotorCurrent current_ma:'+str(self.current_ma)
     
 class RightMotorCurrent:
     ID = 55
     SIZE = 2
     def __init__(self):
-        self.raw = None
+        self.current_ma = None
     def decode(self,packet,ofs):
-        self.raw = packet
+        self.current_ma = _unsigned_word_from_bytes(packet,ofs)
     def __repr__(self):
-        return 'TODO raw:'+str(self.raw)
+        return 'RightMotorCurrent current_ma:'+str(self.current_ma)
     
 class MainBrushMotorCurrent:
     ID = 56
     SIZE = 2
     def __init__(self):
-        self.raw = None
+        self.current_ma = None
     def decode(self,packet,ofs):
-        self.raw = packet
+        self.current_ma = _unsigned_word_from_bytes(packet,ofs)
     def __repr__(self):
-        return 'TODO raw:'+str(self.raw)
+        return 'MainBrushMotorCurrent current_ma:'+str(self.current_ma)
     
 class SideBrushMotorCurrent:
     ID = 57
     SIZE = 2
     def __init__(self):
-        self.raw = None
+        self.current_ma = None
     def decode(self,packet,ofs):
-        self.raw = packet
+        self.current_ma = _unsigned_word_from_bytes(packet,ofs)
     def __repr__(self):
-        return 'TODO raw:'+str(self.raw)
+        return 'SideBrushMotorCurrent current_ma:'+str(self.current_ma)
     
 class Stasis:
     ID = 58
     SIZE = 1
     def __init__(self):
-        self.raw = None
+        self.is_disabled = None
+        self.is_toggling = None
     def decode(self,packet,ofs):
-        self.raw = packet
+        self.is_disabled   = ((packet[ofs]&2)>0)
+        self.is_toggling   = ((packet[ofs]&1)>0)
     def __repr__(self):
-        return 'TODO raw:'+str(self.raw)
-
-#
-
+        return 'Stasis is_disabled:'+str(self.is_disabled)+' is_toggling:'+str(self.is_toggling)

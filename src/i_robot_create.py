@@ -117,17 +117,18 @@ class Create(object):
     
 if __name__ == '__main__':
     
-    import sensor_packets
-    #import sensor_groups
+    #import sensor_packets
+    import sensor_groups
     
     roomba = Create('/dev/ttyUSB0')
     
-    roomba.set_mode_safe()
-        
-    sens = sensor_packets.Angle()
+    roomba.set_mode_safe()    
+      
+    sens = sensor_groups.Group_107()
     roomba.get_sensor_packet(sens)
-    print(sens)
+    print(sens)    
     
+    '''  
     roomba.set_drive_spin_ccw(100)
     time.sleep(2)
     roomba.set_drive_stop()
@@ -145,6 +146,7 @@ if __name__ == '__main__':
     print(sens)    
             
     time.sleep(2)
+    '''
     
     roomba.set_mode_passive()
     time.sleep(1)

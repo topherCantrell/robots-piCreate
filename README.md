@@ -1,6 +1,6 @@
 # iRobotCreate and Raspberry Pi
 
-## The iRobot Create platform ##
+## The iRobot Create platform
 
 All of the Roomba robots have the "Open Interface" built into them. You can hack any of the models to get access to the
 serial port.
@@ -61,3 +61,33 @@ https://developer.mbed.org/cookbook/iRobot-Create-Robot
 http://www.societyofrobots.com/member_tutorials/book/export/html/350
 
 
+TODO get a remote, virtual walls
+
+## Challenges
+
+  - Play a song
+  - Make and play 4 songs
+  - Attach the songs to buttons
+  
+  - Forward till bump, wall, light, cliff, virtual wall
+  
+  - Dock algorithm
+  
+  - Turn to degree (45,90,180). Make routines.
+  
+  - Drive to distance. Make routine.
+  
+  - Drive in a square.
+  - Navigate obstacles.
+  - Knock over cups.
+
+  - Judge distance with encoders (use tape measure). Make routines.
+  - Judge turn with encoders. Make routines.
+  
+## Remote control
+
+Use a websocket for low latency. 
+
+Tank drive
+
+Sensor page
