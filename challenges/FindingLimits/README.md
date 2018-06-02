@@ -1,0 +1,1 @@
+  - Forward till bump, wall, light, cliff, virtual wall

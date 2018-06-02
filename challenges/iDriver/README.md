@@ -1,0 +1,3 @@
+  - Drive in a square.
+  - Navigate obstacles.
+  - Knock over cups.
