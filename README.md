@@ -26,6 +26,8 @@ and Raspberry Pi. It shows how to connect remotely through wifi using Putty or t
 the robot from a browser on a mobile device (phone or tablet). This is a great platform to take to out-reach events. Put your club flyers on the
 robot and drive it around the event. Invite kids to drive the robot, and talk to them about your club.
 
+The web interface allows scripted control through drag-and-drop commands. Users can try their hand at rudimentary programming challenges.
+
 ## Programming Challenges
 
 [Follow this link](challenges) to a list of programming challenges for the students in your club/class. Contribute your own challenges back to community through
