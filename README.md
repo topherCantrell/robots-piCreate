@@ -28,7 +28,7 @@ robot and drive it around the event. Invite kids to drive the robot, and talk to
 
 ## Programming Challenges
 
-[Follow this link] to a list of programming challenges for the students in your club/class. Contribute your own challenges back to community through
+[Follow this link](challenges) to a list of programming challenges for the students in your club/class. Contribute your own challenges back to community through
 this repository.
 
 ![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/art/smallBadge.jpg)
