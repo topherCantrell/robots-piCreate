@@ -10,7 +10,8 @@ the robot's music functions.
   - Create a one note "song" for E (note 64). Make this song 3.
   - Write a program to play the songs when DAY, HOUR, an MINUTE are pressed.
   - Try using the iRobotCreate buttons like a three-note piano. Can you play Mary had a Little Lamb?
-  - Create the "Mary had a Little Lamb" song. Make this song 0. Create it last in your code.
+  - Create the "Mary had a Little Lamb" song. Make this song 0. Be sure your code adds this long
+    song to the roomba last.
   - Modify your code to play the new song when CLEAN is pressed.
   
 There is room for 16 notes in each song. If you give more than 16 notes, then data spills into the next song's area. That's why you used song 0 (the first song slot) to hold "Mary had a Little Lamb" and you
