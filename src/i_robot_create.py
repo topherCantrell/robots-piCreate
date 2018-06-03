@@ -95,9 +95,9 @@ class Create(object):
         # The documentation says song number are 0-4, which would be 5 total songs.
         # My experimentation shows only 0-3 are valid.
         #
-        # Experimentation shows that each song can be at most 32 notes. If you pass in more
-        # than 32 then the notes spill into the next song. This allows you to use song 0
-        # as one big 32*4 note song.
+        # Experimentation shows that each song can be at most 16 notes. If you pass in more
+        # than 16 then the notes spill into the next song. This allows you to use song 0
+        # as one big 16*4 note song.
         cmd = b'\x8C' + bytes([number,len(notes)])
         for note in notes:
             cmd = cmd + bytes([note[0],note[1]])
