@@ -2,6 +2,8 @@
 
 Earn badges for completing the following challenges!
 
+Do you have ideas for other challenges? Send them to me in email or fork this repo and add them yourself!
+
 | Badge | Challenge |
 | ----  | ----      |
 | [The Musician](./Musician)              | Make music with the robot's song system. |
