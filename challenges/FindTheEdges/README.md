@@ -1,6 +1,6 @@
 # Find the Edges Badge
 
-![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/challenges/FindTheEdges/art/EdgesBadge.jpg)
+![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/challenges/FindTheEdges/art/smallEdgesBadge.jpg)
 
 Use the robot's sensors to detect walls and cliffs.
 
