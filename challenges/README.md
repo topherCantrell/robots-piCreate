@@ -11,7 +11,7 @@ Do you have ideas for other challenges? Send them to me in email or fork this re
 | [Find the Edges](./FindTheEdges)        | Help the robot find cliffs and walls. |
 | [Encoder Lab](./EncoderLab)             | Learn the math for the robot's wheel encoders. |
 | [Take Turns](./TakeTurns)               | Code the robot to make precise turns. |
-| [Remote Control])(./RemoteControl)      | Code the robot to drive with commands from the IR remote. |
+| [Remote Control](./RemoteControl)       | Code the robot to drive with commands from the IR remote. |
 | [Precision Driving](./PrecisionDriving) | Code the robot to drive precise distances. |
 | [Auto Pilot](./AutoPilot)               | Dodge obstacles and navigate complex courses. |
 | [What's up Dock](./WhatsUpDock)         | Write code to drive the robot to its charging base. |
