@@ -11,6 +11,19 @@ from sx1509_registers import REG_MISC, REG_CLOCK, REG_DEBOUNCE_CONFIG, REG_DEBOU
 From the schematics:
 https://cdn.sparkfun.com/datasheets/Sensors/Infrared/SparkFun%20Line%20Follower%20Array_v10.pdf
 
+The schematic shows the inputs to the expander are on the output of the buffer. So the 
+feedback must be active (low) to get readings.
+
+The brightness of the IR LEDs is controlled by a variable POT. The MOS could be pulsed, I supposed,
+for added software control.
+
+Maybe the debounce is useful for the inputs?
+
+TODO the software below doesn't handle debouncing all possible pins
+TODO LED driver pins interface?
+
+But at powerup it should be ready to go ... just read the raw data.
+
 Interrupt pin brought off board
 
 Data Port A:
