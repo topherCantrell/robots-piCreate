@@ -11,6 +11,10 @@ The data sheet
 
 https://cdn.sparkfun.com/assets/learn_tutorials/4/3/4/sx150x_789.pdf
 
+Schematic
+
+https://cdn.sparkfun.com/datasheets/Sensors/Infrared/SparkFun%20Line%20Follower%20Array_v10.pdf
+
 ```
 sudo i2cdetect -y 1
 ```
