@@ -15,10 +15,10 @@ cd /home/pi/web
 import tornado.ioloop
 import tornado.web
 import os
-import i_robot_create
+import irobot_create
 
-#roomba = i_robot_create.Create('COM4')
-roomba = i_robot_create('/dev/ttyUSB0')
+#roomba = irobot_create.Create('COM4')
+roomba = irobot_create('/dev/ttyUSB0')
 
 # Switch to control mode
 roomba.set_mode_full()

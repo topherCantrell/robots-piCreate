@@ -1,11 +1,11 @@
 import time
-import i_robot_create
+import irobot_create
 import sensor_packets
 
 
 # Connect to the roomba
-roomba = i_robot_create.Create('/dev/ttyUSB0') # On the Raspberry Pi 
-#roomba = i_robot_create.Create('COM4') # On my PC    
+roomba = irobot_create.Create('/dev/ttyUSB0') # On the Raspberry Pi 
+#roomba = irobot_create.Create('COM4') # On my PC    
     
 # SAFE mode automatically stops when we bump something. FULL does not.
 roomba.set_mode_safe()
