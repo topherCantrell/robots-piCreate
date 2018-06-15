@@ -20,19 +20,9 @@ for i in range(4):
     roomba.set_drive_spin_cw(TURN_SPEED)
     time.sleep(TURN_TIME)
     
-#roomba.set_drive_spin_cw(TURN_SPEED)
-#time.sleep(TURN_TIME)
-    
 roomba.set_drive_stop() 
-
-# Try precision driving from drive_util
-
-# How did you determine the drive times and speeds? Do the times depend on the
-# speeds? Are the errors larger when the drive time is longer? What about when
-# the battery drains down a bit?
     
 # Graceful sleep (allows for charging)
 roomba.set_mode_passive()
-time.sleep(1)
 roomba.set_mode_stop()
     
