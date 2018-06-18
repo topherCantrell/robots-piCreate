@@ -4,7 +4,7 @@ All of the Roomba robots have the "Open Interface" built into them. You can hack
 serial port.
 
 The "Create" products are Roomba robots the iRobot company made just for hobbyists. The serial port is available through a
-provided serial cable (and through the cargo-bay connector in the first series of "Creates".
+provided serial cable (and through the cargo-bay connector in the first series of "Creates").
 
 There are two versions of the serial interface. The older models use this protocol:
 
