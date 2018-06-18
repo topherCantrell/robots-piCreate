@@ -37,4 +37,3 @@ The web interface allows scripted control through drag-and-drop commands. Users 
 [Follow this link](challenges) to a list of programming challenges for the students in your club/class. Contribute your own challenges back to community through
 this repository.
 
-![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/art/smallBadge.jpg)
