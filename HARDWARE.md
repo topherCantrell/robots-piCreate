@@ -51,6 +51,3 @@ But the cable from adafruit does supply power correctly.
 
 ![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/art/picreate2.jpg)
 
-![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/art/picreate1b.jpg)
-
-![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/art/picreate2b.jpg)
