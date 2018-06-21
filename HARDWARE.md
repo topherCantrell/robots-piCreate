@@ -21,8 +21,6 @@ http://www.irobot.com/About-iRobot/STEM/Create-2.aspx
 Here is a project page for Create and the Raspberry Pi:
 http://www.irobot.com/~/media/MainSite/PDFs/About/STEM/Create/RaspberryPi_Tutorial.pdf
 
-![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/art/wiring.jpg)
-
 ![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/art/iRobotDIN.jpg)
 
 Buy the robot (adafruit): https://www.adafruit.com/product/2388
