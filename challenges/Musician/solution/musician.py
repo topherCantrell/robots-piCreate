@@ -1,13 +1,9 @@
-import time
 import irobot_create
 import sensor_packets
 
 # Connect to the roomba
-# roomba = irobot_create.Create('/dev/ttyUSB0') # On the Raspberry Pi 
-roomba = irobot_create.Create('COM4') # On my PC
-    
-# We won't be driving. Pick the "safe" mode.
-roomba.set_mode_safe()    
+roomba = irobot_create.Roomba('/dev/ttyUSB0') # On the Raspberry Pi 
+#roomba = irobot_create.Create('COM4') # On my PC 
 
 # Note middle C
 roomba.set_song(1,[ [60,8] ])
@@ -60,7 +56,4 @@ while True:
         break
     
 # Graceful sleep (allows for charging)
-roomba.set_mode_passive()
-time.sleep(1)
-roomba.set_mode_stop()
-    
+roomba.close()

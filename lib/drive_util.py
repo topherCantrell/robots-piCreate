@@ -47,7 +47,7 @@ import time
 import irobot_create
 import sensor_packets
 
-robot = irobot_create.Create('/dev/ttyUSB0')
+robot = irobot_create.Roomba('/dev/ttyUSB0')
 robot_util = Drive(robot)
 
 robot.set_mode_safe()

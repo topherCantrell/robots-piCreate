@@ -1,11 +1,23 @@
 import serial
 import time
 
-class Create(object):
-
-    def __init__(self, port_name):
-        self.roomba = serial.Serial(port_name,115200)
-        self.set_mode_passive()        
+class Roomba(object):
+    
+    def __init__(self, port_name, is_create_two=True):
+        if(is_create_two):
+            # Create 2 uses 115200
+            self.roomba = serial.Serial(port_name,115200)
+        else:
+            # Create 1 uses 57600
+            self.roomba = serial.Serial(port_name,57600)
+        self.set_mode_passive()  
+        self.set_mode_safe()
+        
+    def close(self):
+        # Graceful sleep (allows for charging)
+        self.set_mode_passive()
+        time.sleep(1)
+        self.set_mode_stop()      
         
     def _signed_word_to_bytes(self,value):
         # The roomba uses 16 bit signed words, MSB first
@@ -176,8 +188,8 @@ if __name__ == '__main__':
     #import sensor_packets
     import sensor_groups
     
-    #roomba = Create('/dev/ttyUSB0')
-    roomba = Create('COM4')
+    roomba = Roomba('/dev/ttyUSB0')
+    #roomba = Roomba('COM4')
     
     roomba.set_mode_full()    
     

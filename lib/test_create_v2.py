@@ -2,8 +2,8 @@ import serial
 import time
 
 # create defaults to 115200 baud
-create = serial.Serial('COM6',115200)
-#create = serial.Serial('/dev/ttyUSB0',115200)
+#create = serial.Serial('COM6',115200)
+create = serial.Serial('/dev/ttyUSB0',115200)
 
 print("Sending OI START command (128). You should hear a high-pitch beep.")
 create.write(b'\x80')
@@ -32,6 +32,12 @@ print('Playing song 1')
 create.write(b'\x8D\x01')
 print('Sleeping 3 seconds for song to play')
 time.sleep(3)
+
+
+print('Setting LED digits')
+create.write(b'\xA3\xFF\xFF\xFF\xFF')
+time.sleep(10)
+
 
 print('Sending OI START command (128) going back to passive mode.')
 create.write(b'\x80')
