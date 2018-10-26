@@ -1,6 +1,6 @@
 # The Musician Badge
   
-![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/challenges/Musician/art/smallMusicianBadge.jpg)
+![](art/smallMusicianBadge.jpg)
 
 The iRobotCreate can store and play four songs. In this challenge, you will write code for
 the robot's music functions.
