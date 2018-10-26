@@ -1,6 +1,6 @@
 # The Square Dance Badge
 
-![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/challenges/SquareDance/art/smallSquareDanceBadge.jpg)
+![](art/smallSquareDanceBadge.jpg)
 
 Program the iRobotCreate to drive in a square pattern.
 
