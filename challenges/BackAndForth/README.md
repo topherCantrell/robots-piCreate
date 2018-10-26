@@ -1,6 +1,6 @@
 # Back and Forth Badge
   
-![](https://github.com/topherCantrell/robots-iRobotCreate/blob/master/challenges/BackAndForth/art/smallBackAndForthBadge.jpg)
+![](art/smallBackAndForthBadge.jpg)
 
 Basic robot tasks can be frustrating! Try this simple challenge:
   - Drive the robot forward several seconds
