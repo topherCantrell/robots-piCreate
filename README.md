@@ -19,21 +19,26 @@ http://www.irobotweb.com/~/media/MainSite/PDFs/About/STEM/Create/iRobot_Roomba_6
 [Follow this guide](HARDWARE.md) to get your robot hardware running. The guide shows how to connect a Raspberry Pi to the iCreate1 and iCreate2.
 The guide includes wiring diagrams and links to buy the parts.
 
-## Learn the Software
+## Installation
 
-[Follow this link](lib) to my Python library for controlling the create robot. The guide shows how to install the software on you PC
-and Raspberry Pi. It shows how to connect remotely through wifi using Putty or the Eclipse IDE.
+On the Raspberry Pi:
+```
+git clone https://github.com/topherCantrell/robots-piCreate
+cd robots-piCreate
+sudo python3 setup.py install
+```
 
 ## Web Control
 
-[Follow this link](webcontrol) to my web remote control software. The guide shows how to run the web server on the raspberry pi and control
-the robot from a browser on a mobile device (phone or tablet). This is a great platform to take to out-reach events. Put your club flyers on the
-robot and drive it around the event. Invite kids to drive the robot, and talk to them about your club.
+This web server runs on the raspberry pi and controls the robot from a browser on a mobile device (phone or tablet). 
+This is a great platform to take to out-reach events. Put your club flyers on the robot and drive it around the event. 
+Invite kids to drive the robot, and talk to them about your club.
 
 The web interface allows scripted control through drag-and-drop commands. Users can try their hand at rudimentary programming challenges.
 
-## Programming Challenges
-
-[Follow this link](challenges) to a list of programming challenges for the students in your club/class. Contribute your own challenges back to community through
-this repository.
+Run the webserver controller:
+```
+cd webcontrol
+python3 server.py
+```
 
