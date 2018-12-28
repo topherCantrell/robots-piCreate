@@ -1,6 +1,7 @@
 """
   - Use the sudo raspi-config to turn off the serial terminal but enable the serial hardware
   - Install pyserial (probably already installed)
+  - Install IRobotCreate (my repo at https://github.com/topherCantrell/robots-piCreate)
   - Install tornado GLOBALLY like this: python -m pip install tornado
   - This file is in a directory named "web". Copy the entire directory (and subs) to the pi home
   - Add this line to /etc/rc.local (before the exit 0):
@@ -15,10 +16,10 @@ cd /home/pi/web
 import tornado.ioloop
 import tornado.web
 import os
-import irobot_create
+import IRobotCreate
 
 #roomba = irobot_create.Create('COM4')
-roomba = irobot_create('/dev/ttyUSB0')
+roomba = IRobotCreate.roomba.Roomba() # '/dev/ttyUSB0'
 
 # Switch to control mode
 roomba.set_mode_full()
