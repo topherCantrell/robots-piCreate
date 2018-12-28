@@ -6,6 +6,8 @@ The iRobotCreate is a fantastic base platform for robotics clubs and classes. Th
 Create is a genuine refurbished Roomba robot with a serial interface port. You can use a USB-to-serial dongle to control the
 robot from your computer. Or mount a raspberry pi to the robot for a stand-alone mobile brain you connect to through wifi.
 
+Have a look at my own robotics class here: https://github.com/topherCantrell/class-piCreate
+
 Here is the official documentation, version 1 hardware (old):
 
 http://www.irobot.com/filelibrary/pdfs/hrd/create/Create%20Open%20Interface_v2.pdf
