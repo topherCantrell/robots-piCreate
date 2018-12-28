@@ -3,7 +3,7 @@ import time
 
 class Roomba(object):
     
-    def __init__(self, port_name, is_create_two=True):
+    def __init__(self, port_name='/dev/ttyUSB0', is_create_two=True):
         if(is_create_two):
             # Create 2 uses 115200
             self.roomba = serial.Serial(port_name,115200)
