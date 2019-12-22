@@ -1,5 +1,7 @@
 # iRobotCreate and Raspberry Pi
 
+![](art/servo.jpg) https://www.servomagazine.com/magazine/article/irobot-create2-raspberry-pi-picreate
+
 ![](art/small.jpg)
 
 The iRobotCreate is a fantastic base platform for robotics clubs and classes. The Roomba is a familiar appliance in our society today. The 
