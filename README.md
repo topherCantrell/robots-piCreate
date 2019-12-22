@@ -1,7 +1,11 @@
 # iRobotCreate and Raspberry Pi
 
-![](art/servo.jpg) 
+### As Seen In
+
+![](art/servo.jpg) <br>
 https://www.servomagazine.com/magazine/article/irobot-create2-raspberry-pi-picreate
+
+# Robot Classes
 
 ![](art/small.jpg)
 
