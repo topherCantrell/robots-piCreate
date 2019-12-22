@@ -1,6 +1,6 @@
 # iRobotCreate and Raspberry Pi
 
-### As Seen In
+### As Seen In Servo Magazine
 
 [![](art/servo.jpg)](https://www.servomagazine.com/)<br>
 https://www.servomagazine.com/magazine/article/irobot-create2-raspberry-pi-picreate
