@@ -2,7 +2,7 @@
 
 ### As Seen In
 
-![](art/servo.jpg) <br>
+[![](art/servo.jpg)](https://www.servomagazine.com/)<br>
 https://www.servomagazine.com/magazine/article/irobot-create2-raspberry-pi-picreate
 
 # Robot Classes
