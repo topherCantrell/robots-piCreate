@@ -1,8 +1,13 @@
 from sensor_packets import *
 
+"""
+Sensor groups are groups of sensor packets as defined in "sensor_packets.py"
+"""
+
 class Group_0:
     ID = 0
     SIZE = 26 # 7-26
+
     def __init__(self):  
         self.bumpsAndWheelDrops         = BumpsAndWheelDrops()         #  7 1
         self.wall                       = Wall()                       #  8 1
@@ -24,6 +29,7 @@ class Group_0:
         self.batteryTemperature         = BatteryTemperature()         # 24 1
         self.batteryCharge              = BatteryCharge()              # 25 2
         self.batteryCapacity            = BatteryCapacity()            # 26 2        
+
     def decode(self,packet,ofs):
         self.bumpsAndWheelDrops.decode(packet,ofs);         ofs+=1
         self.wall.decode(packet,ofs);                       ofs+=1
@@ -45,6 +51,7 @@ class Group_0:
         self.batteryTemperature.decode(packet,ofs);         ofs+=1
         self.batteryCharge.decode(packet,ofs);              ofs+=2
         self.batteryCapacity.decode(packet,ofs);            ofs+=2        
+
     def __repr__(self):
         return(
             self.bumpsAndWheelDrops.__repr__()         +'\n'+
@@ -71,6 +78,7 @@ class Group_0:
 class Group_1:
     ID = 1
     SIZE = 10 # 7-16
+
     def __init__(self):  
         self.bumpsAndWheelDrops         = BumpsAndWheelDrops()         #  7 1
         self.wall                       = Wall()                       #  8 1
@@ -82,6 +90,7 @@ class Group_1:
         self.wheelOvercurrents          = WheelOvercurrents()          # 14 1
         self.dirtDetect                 = DirtDetect()                 # 15 1            
         #                                                              # 16 1 UNUSED        
+
     def decode(self,packet,ofs):
         self.bumpsAndWheelDrops.decode(packet,ofs);         ofs+=1
         self.wall.decode(packet,ofs);                       ofs+=1
@@ -93,6 +102,7 @@ class Group_1:
         self.wheelOvercurrents.decode(packet,ofs);          ofs+=1
         self.dirtDetect.decode(packet,ofs);                 ofs+=1           
         ofs+=1            
+
     def __repr__(self):
         return(
             self.bumpsAndWheelDrops.__repr__()         +'\n'+
@@ -109,16 +119,19 @@ class Group_1:
 class Group_2:
     ID = 2
     SIZE = 6 # 17-20
+
     def __init__(self):
         self.infraredCharacterOmni      = InfraredCharacterOmni()      # 17 1
         self.buttons                    = Buttons()                    # 18 1
         self.distance                   = Distance()                   # 19 2
         self.angle                      = Angle()                      # 20 2        
+
     def decode(self,packet,ofs):
         self.infraredCharacterOmni.decode(packet,ofs);      ofs+=1
         self.buttons.decode(packet,ofs);                    ofs+=1
         self.distance.decode(packet,ofs);                   ofs+=2
         self.angle.decode(packet,ofs);                      ofs+=2        
+
     def __repr__(self):
         return(            
             self.infraredCharacterOmni.__repr__()      +'\n'+
@@ -130,6 +143,7 @@ class Group_2:
 class Group_3:
     ID = 3
     SIZE = 10    
+
     def __init__(self):        
         self.chargingState      = ChargingState()      # 21 1
         self.batteryVoltage     = BatteryVoltage()     # 22 2
@@ -137,6 +151,7 @@ class Group_3:
         self.batteryTemperature = BatteryTemperature() # 24 1
         self.batteryCharge      = BatteryCharge()      # 25 2
         self.batteryCapacity    = BatteryCapacity()    # 26 2
+
     def decode(self,packet,ofs):
         self.chargingState.decode(packet,ofs);      ofs+=1
         self.batteryVoltage.decode(packet,ofs);     ofs+=2
@@ -144,6 +159,7 @@ class Group_3:
         self.batteryTemperature.decode(packet,ofs); ofs+=1
         self.batteryCharge.decode(packet,ofs);      ofs+=2
         self.batteryCapacity.decode(packet,ofs)
+
     def __repr__(self):
         return (self.chargingState.__repr__()      +'\n'+
                 self.batteryVoltage.__repr__()     +'\n'+
@@ -155,6 +171,7 @@ class Group_3:
 class Group_4:
     ID = 4
     SIZE = 14 # 27-34
+
     def __init__(self):         
         self.wallSignal                 = WallSignal()                 # 27 2
         self.cliffLeftSignal            = CliffLeftSignal()            # 28 2
@@ -164,6 +181,7 @@ class Group_4:
         #                                                              # 32 2 UNUSED
         #                                                              # 33 1 UNUSED
         self.chargingSourcesAvailable   = ChargingSourcesAvailable()   # 34 1        
+
     def decode(self,packet,ofs):        
         self.wallSignal.decode(packet,ofs);                 ofs+=2
         self.cliffLeftSignal.decode(packet,ofs);            ofs+=2
@@ -172,6 +190,7 @@ class Group_4:
         self.cliffRightSignal.decode(packet,ofs);           ofs+=2
         ofs+=2
         ofs+=1        
+
     def __repr__(self):
         return(            
             self.wallSignal.__repr__()                 +'\n'+
@@ -184,6 +203,7 @@ class Group_4:
 class Group_5:
     ID = 5
     SIZE = 12 # 35-42
+
     def __init__(self):
         self.oIMode                     = OIMode()                     # 35 1
         self.songNumber                 = SongNumber()                 # 36 1
@@ -193,6 +213,7 @@ class Group_5:
         self.requestedRadius            = RequestedRadius()            # 40 2
         self.requestedRightVelocity     = RequestedRightVelocity()     # 41 2
         self.requestedLeftVelocity      = RequestedLeftVelocity()      # 42 2
+
     def decode(self,packet,ofs):        
         self.oIMode.decode(packet,ofs);                     ofs+=1
         self.songNumber.decode(packet,ofs);                 ofs+=1
@@ -202,6 +223,7 @@ class Group_5:
         self.requestedRadius.decode(packet,ofs);            ofs+=2
         self.requestedRightVelocity.decode(packet,ofs);     ofs+=2
         self.requestedLeftVelocity.decode(packet,ofs);      ofs+=2
+
     def __repr__(self):
         return(            
             self.oIMode.__repr__()                     +'\n'+
@@ -217,6 +239,7 @@ class Group_5:
 class Group_6:
     ID = 6
     SIZE = 52 # 7-42
+
     def __init__(self):  
         self.bumpsAndWheelDrops         = BumpsAndWheelDrops()         #  7 1
         self.wall                       = Wall()                       #  8 1
@@ -254,6 +277,7 @@ class Group_6:
         self.requestedRadius            = RequestedRadius()            # 40 2
         self.requestedRightVelocity     = RequestedRightVelocity()     # 41 2
         self.requestedLeftVelocity      = RequestedLeftVelocity()      # 42 2
+
     def decode(self,packet,ofs):
         self.bumpsAndWheelDrops.decode(packet,ofs);         ofs+=1
         self.wall.decode(packet,ofs);                       ofs+=1
@@ -291,6 +315,7 @@ class Group_6:
         self.requestedRadius.decode(packet,ofs);            ofs+=2
         self.requestedRightVelocity.decode(packet,ofs);     ofs+=2
         self.requestedLeftVelocity.decode(packet,ofs);      ofs+=2
+
     def __repr__(self):
         return(
             self.bumpsAndWheelDrops.__repr__()         +'\n'+
@@ -331,6 +356,7 @@ class Group_6:
 class Group_100:
     ID = 100
     SIZE = 80           
+
     def __init__(self):  
         self.bumpsAndWheelDrops         = BumpsAndWheelDrops()         #  7 1
         self.wall                       = Wall()                       #  8 1
@@ -384,6 +410,7 @@ class Group_100:
         self.mainBrushMotorCurrent      = MainBrushMotorCurrent()      # 56 2
         self.sideBrushMotorCurrent      = SideBrushMotorCurrent()      # 57 2
         self.stasis                     = Stasis()                     # 58 1 
+
     def decode(self,packet,ofs):
         self.bumpsAndWheelDrops.decode(packet,ofs);         ofs+=1
         self.wall.decode(packet,ofs);                       ofs+=1
@@ -437,6 +464,7 @@ class Group_100:
         self.mainBrushMotorCurrent.decode(packet,ofs);      ofs+=2
         self.sideBrushMotorCurrent.decode(packet,ofs);      ofs+=2
         self.stasis.decode(packet,ofs);                     ofs+=1    
+
     def __repr__(self):
         return(
             self.bumpsAndWheelDrops.__repr__()         +'\n'+
@@ -493,6 +521,7 @@ class Group_100:
 class Group_101:
     ID = 101
     SIZE = 28 # 43-58
+
     def __init__(self): 
         self.leftEncoderCounts          = LeftEncoderCounts()          # 43 2
         self.rightEncoderCounts         = RightEncoderCounts()         # 44 2
@@ -510,6 +539,7 @@ class Group_101:
         self.mainBrushMotorCurrent      = MainBrushMotorCurrent()      # 56 2
         self.sideBrushMotorCurrent      = SideBrushMotorCurrent()      # 57 2
         self.stasis                     = Stasis()                     # 58 1 
+
     def decode(self,packet,ofs):
         self.leftEncoderCounts.decode(packet,ofs);          ofs+=2
         self.rightEncoderCounts.decode(packet,ofs);         ofs+=2
@@ -527,6 +557,7 @@ class Group_101:
         self.mainBrushMotorCurrent.decode(packet,ofs);      ofs+=2
         self.sideBrushMotorCurrent.decode(packet,ofs);      ofs+=2
         self.stasis.decode(packet,ofs);                     ofs+=1    
+
     def __repr__(self):
         return(            
             self.leftEncoderCounts.__repr__()          +'\n'+
@@ -550,6 +581,7 @@ class Group_101:
 class Group_106:
     ID = 106
     SIZE = 12 # 46-51
+
     def __init__(self):  
         self.lightBumpLeftSignal        = LightBumpLeftSignal()        # 46 2
         self.lightBumpFrontLeftSignal   = LightBumpFrontLeftSignal()   # 47 2
@@ -557,6 +589,7 @@ class Group_106:
         self.lightBumpCenterRightSignal = LightBumpCenterRightSignal() # 49 2
         self.lightBumpFrontRightSignal  = LightBumpFrontRightSignal()  # 50 2
         self.lightBumpRightSignal       = LightBumpRightSignal()       # 51 2        
+
     def decode(self,packet,ofs):        
         self.lightBumpLeftSignal.decode(packet,ofs);        ofs+=2
         self.lightBumpFrontLeftSignal.decode(packet,ofs);   ofs+=2
@@ -564,6 +597,7 @@ class Group_106:
         self.lightBumpCenterRightSignal.decode(packet,ofs); ofs+=2
         self.lightBumpFrontRightSignal.decode(packet,ofs);  ofs+=2
         self.lightBumpRightSignal.decode(packet,ofs);       ofs+=2        
+
     def __repr__(self):
         return(            
             self.lightBumpLeftSignal.__repr__()        +'\n'+
@@ -577,18 +611,21 @@ class Group_106:
 class Group_107:
     ID = 107
     SIZE = 9 # 54-58
+
     def __init__(self):
         self.leftMotorCurrent           = LeftMotorCurrent()           # 54 2
         self.rightMotorCurrent          = RightMotorCurrent()          # 55 2
         self.mainBrushMotorCurrent      = MainBrushMotorCurrent()      # 56 2
         self.sideBrushMotorCurrent      = SideBrushMotorCurrent()      # 57 2
         self.stasis                     = Stasis()                     # 58 1 
+
     def decode(self,packet,ofs):
         self.leftMotorCurrent.decode(packet,ofs);           ofs+=2
         self.rightMotorCurrent.decode(packet,ofs);          ofs+=2
         self.mainBrushMotorCurrent.decode(packet,ofs);      ofs+=2
         self.sideBrushMotorCurrent.decode(packet,ofs);      ofs+=2
         self.stasis.decode(packet,ofs);                     ofs+=1    
+
     def __repr__(self):
         return(            
             self.leftMotorCurrent.__repr__()           +'\n'+
